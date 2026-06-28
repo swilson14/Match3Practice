@@ -1,6 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Match3Practice.src;
+using Microsoft.VisualBasic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace Match3Practice
 {
@@ -8,6 +12,10 @@ namespace Match3Practice
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private BoxingViewportAdapter _viewportAdapter;
+        private OrthographicCamera _camera;
+        private StateMachine _stateMachine;
 
         public Game1()
         {
@@ -18,9 +26,19 @@ namespace Match3Practice
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
+
+            // Window Size
+            _graphics.PreferredBackBufferWidth = Globals.WINDOW_WIDTH;
+            _graphics.PreferredBackBufferHeight = Globals.WINDOW_HEIGHT;
+            _graphics.ApplyChanges();
+
+            _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT);
+            _camera = new OrthographicCamera(_viewportAdapter);
+
+            _stateMachine = new StateMachine();
+            // Add states and then change to the initial state
+
         }
 
         protected override void LoadContent()
@@ -44,7 +62,14 @@ namespace Match3Practice
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            // Get the camera's transformation matrix
+            Matrix transformMatrix = _camera.GetViewMatrix();
+
+            // Apply the transformation to the sprite batch
+            _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
+
+            // Draw graphics
+            _stateMachine.Draw(_spriteBatch);
 
             base.Draw(gameTime);
         }
