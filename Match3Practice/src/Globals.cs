@@ -10,8 +10,8 @@ namespace Match3Practice.src
     {
         public static int WINDOW_WIDTH = 1280;
         public static int WINDOW_HEIGHT = 720;
-
         public static int VIRTUAL_WIDTH = 512;
         public static int VIRTUAL_HEIGHT = 288;
+        public static int TILE_SIZE = 32;
     }
 }
