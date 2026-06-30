@@ -29,6 +29,11 @@ namespace Match3Practice
         private Texture2D _backgroundTexture;
         private Texture2D _tilesTexture;
 
+        // Fonts
+        private SpriteFont _smallFont;
+        private SpriteFont _mediumFont;
+        private SpriteFont _largeFont;
+
         // Audio
         private SoundEffect _clockSound;
         private SoundEffect _errorSound;
@@ -46,6 +51,10 @@ namespace Match3Practice
         // Other
         private Random _random = new Random();
         private int[,] _board;
+        private Timer _timer;
+        private int[] _intervals;
+        private int[] _counters;
+
 
         public Game1()
         {
@@ -57,6 +66,21 @@ namespace Match3Practice
         protected override void Initialize()
         {
             base.Initialize();
+
+            _timer = new Timer();
+
+            // Timer example
+            _intervals = new int[] { 1, 2, 4, 3, 2, 8 };
+            _counters = new int[] { 0, 0, 0, 0, 0, 0 };
+
+            for (int i = 0; i < _intervals.Length; i++)
+            {
+                int index = i;
+                _timer.Every(_intervals[index], () =>
+                { 
+                    _counters[index]++;
+                });
+            }
 
             // Window Size
             _graphics.PreferredBackBufferWidth = Globals.WINDOW_WIDTH;
@@ -96,6 +120,11 @@ namespace Match3Practice
             Music1 = Content.Load<Song>("sounds/music");
             Music2 = Content.Load<Song>("sounds/music2");
             Music3 = Content.Load<Song>("sounds/music3");
+
+            // Fonts
+            _smallFont = Content.Load<SpriteFont>("fonts/small");
+            _mediumFont = Content.Load<SpriteFont>("fonts/medium");
+            _largeFont = Content.Load<SpriteFont>("fonts/large");
 
         }
 
@@ -138,6 +167,8 @@ namespace Match3Practice
 
         protected override void Update(GameTime gameTime)
         {
+            _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
             _keyboard.Update();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || _keyboard.WasKeyJustPressed(Keys.Escape))
@@ -165,16 +196,25 @@ namespace Match3Practice
             int boardHeight = Globals.VIRTUAL_HEIGHT / Globals.TILE_SIZE;
             int boardWidth = Globals.VIRTUAL_WIDTH / Globals.TILE_SIZE;
 
-            for (int i = 0; i < boardHeight; i++)
-            {
-                for (int j = 0; j < boardWidth; j++)
-                {
-                    _tileSprites[_board[i, j]].Draw(_spriteBatch, new Vector2(j * Globals.TILE_SIZE, i * Globals.TILE_SIZE));
-                }
-            }
+            //for (int i = 0; i < boardHeight; i++)
+            //{
+            //    for (int j = 0; j < boardWidth; j++)
+            //    {
+            //        _tileSprites[_board[i, j]].Draw(_spriteBatch, new Vector2(j * Globals.TILE_SIZE, i * Globals.TILE_SIZE));
+            //    }
+            //}
 
             // Draw graphics
             //_stateMachine.Draw(_spriteBatch);
+            _spriteBatch.End();
+
+            // Draw Text.
+            _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+
+            for (int i = 0; i < _intervals.Length; i++)
+            {
+                _spriteBatch.DrawString(_mediumFont, $"Timer {i + 1}: {_counters[i]}", new Vector2(10, 10 + i * 40), Color.White);
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
         }
