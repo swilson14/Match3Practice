@@ -29,6 +29,13 @@ namespace Match3Practice
             tasks.Add(new RepeatingTimerTask(interval, callback));
         }
 
+        public TimerChain Chain()
+        {
+            var chain = new TimerChain();
+            tasks.Add(chain);
+            return chain;
+        }
+
         public void Clear()
         {
             tasks.Clear();
@@ -84,4 +91,104 @@ namespace Match3Practice
         }
     }
 
+    /// <summary>
+    /// A queue of steps (delays + callbacks) that run one after another,
+    /// similar to knife.chain in Lua. Build it with Wait/Then/After, then
+    /// call Start() to kick it off.
+    /// </summary>
+    public class TimerChain : TimerTask
+    {
+        private struct ChainStep
+        {
+            public float Delay;
+            public Action Callback;
+        }
+
+        private readonly Queue<ChainStep> steps = new();
+        private Action currentCallback;
+        private bool started;
+        private bool finished;
+
+        // We don't use the base class's duration/callback fields directly,
+        // TimerChain manages its own step queue instead.
+        public TimerChain() : base(0f, null) { }
+
+        /// <summary>Queue a pause with no callback.</summary>
+        public TimerChain Wait(float seconds)
+        {
+            steps.Enqueue(new ChainStep { Delay = seconds, Callback = null });
+            return this;
+        }
+
+        /// <summary>Queue a callback that fires as soon as the previous step finishes.</summary>
+        public TimerChain Then(Action callback)
+        {
+            steps.Enqueue(new ChainStep { Delay = 0f, Callback = callback });
+            return this;
+        }
+
+        /// <summary>Queue a delay followed by a callback (Wait + Then combined).</summary>
+        public TimerChain After(float seconds, Action callback)
+        {
+            steps.Enqueue(new ChainStep { Delay = seconds, Callback = callback });
+            return this;
+        }
+
+        /// <summary>Repeats everything queued so far an additional `times` times.</summary>
+        public TimerChain Repeat(int times)
+        {
+            var snapshot = steps.ToArray();
+            for (int i = 0; i < times; i++)
+                foreach (var step in snapshot)
+                    steps.Enqueue(step);
+            return this;
+        }
+
+        /// <summary>Begins running the chain. Call this last.</summary>
+        public TimerChain Start()
+        {
+            if (started) return this;
+            started = true;
+            AdvanceToNextStep();
+            return this;
+        }
+
+        private void AdvanceToNextStep()
+        {
+            if (steps.Count == 0)
+            {
+                finished = true;
+                return;
+            }
+
+            var step = steps.Dequeue();
+            remaining = step.Delay;
+            currentCallback = step.Callback;
+
+            // Zero-delay steps (Then) fire immediately and cascade into
+            // the next step within the same Update call.
+            if (remaining <= 0f)
+            {
+                currentCallback?.Invoke();
+                AdvanceToNextStep();
+            }
+        }
+
+        public override bool Update(float dt)
+        {
+            if (!started) return false;
+            if (finished) return true;
+
+            remaining -= dt;
+
+            if (remaining <= 0f)
+            {
+                currentCallback?.Invoke();
+                AdvanceToNextStep();
+                return finished;
+            }
+
+            return false;
+        }
+    }
 }

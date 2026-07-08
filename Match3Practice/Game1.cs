@@ -108,7 +108,7 @@ namespace Match3Practice
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
-            RefreshBoard();
+            GenerateBoard();
 
             // Audio
             _clockSound = Content.Load<SoundEffect>("sounds/clock");
@@ -128,16 +128,14 @@ namespace Match3Practice
 
         }
 
-        private void RefreshBoard()
+        private void GenerateBoard()
         {
-            _board = new int[Globals.VIRTUAL_HEIGHT / Globals.TILE_SIZE, Globals.VIRTUAL_WIDTH / Globals.TILE_SIZE];
 
-            int boardHeight = Globals.VIRTUAL_HEIGHT / Globals.TILE_SIZE;
-            int boardWidth = Globals.VIRTUAL_WIDTH / Globals.TILE_SIZE;
+            _board = new int[Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT];
 
-            for (int i = 0; i < boardHeight; i++)
+            for (int i = 0; i < Globals.BOARD_HEIGHT; i++)
             {
-                for (int j = 0; j < boardWidth; j++)
+                for (int j = 0; j < Globals.BOARD_WIDTH; j++)
                 {
                     _board[i, j] = _random.Next(0, _tileSprites.Count - 1);  
                 }
@@ -174,18 +172,12 @@ namespace Match3Practice
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || _keyboard.WasKeyJustPressed(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            if (_keyboard.WasKeyJustPressed(Keys.Space))
-            {
-                RefreshBoard();
-            }
-
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // Get the camera's transformation matrix
             Matrix transformMatrix = _camera.GetViewMatrix();
@@ -193,16 +185,13 @@ namespace Match3Practice
             // Apply the transformation to the sprite batch
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
-            int boardHeight = Globals.VIRTUAL_HEIGHT / Globals.TILE_SIZE;
-            int boardWidth = Globals.VIRTUAL_WIDTH / Globals.TILE_SIZE;
-
-            //for (int i = 0; i < boardHeight; i++)
-            //{
-            //    for (int j = 0; j < boardWidth; j++)
-            //    {
-            //        _tileSprites[_board[i, j]].Draw(_spriteBatch, new Vector2(j * Globals.TILE_SIZE, i * Globals.TILE_SIZE));
-            //    }
-            //}
+            for (int i = 0; i < Globals.BOARD_HEIGHT; i++)
+            {
+                for (int j = 0; j < Globals.BOARD_WIDTH; j++)
+                {
+                    _tileSprites[_board[i, j]].Draw(_spriteBatch, new Vector2(j * Globals.TILE_SIZE + 128, i * Globals.TILE_SIZE + 16));
+                }
+            }
 
             // Draw graphics
             //_stateMachine.Draw(_spriteBatch);
@@ -211,10 +200,10 @@ namespace Match3Practice
             // Draw Text.
             _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
 
-            for (int i = 0; i < _intervals.Length; i++)
-            {
-                _spriteBatch.DrawString(_mediumFont, $"Timer {i + 1}: {_counters[i]}", new Vector2(10, 10 + i * 40), Color.White);
-            }
+            //for (int i = 0; i < _intervals.Length; i++)
+            //{
+            //    _spriteBatch.DrawString(_mediumFont, $"Timer {i + 1}: {_counters[i]}", new Vector2(10, 10 + i * 40), Color.White);
+            //}
             _spriteBatch.End();
             base.Draw(gameTime);
         }
