@@ -15,7 +15,5 @@ namespace Match3Practice.src
         public static int TILE_SIZE = 32;
         public static int BOARD_WIDTH = 8;
         public static int BOARD_HEIGHT = 8;
-
-
     }
 }

@@ -42,7 +42,7 @@ namespace Match3Practice
         private SoundEffect _nextLevelSound;
         private SoundEffect _selectSound;
         private TextureAtlas _tileAtlas;
-        private List<Sprite> _tileSprites = new List<Sprite>();
+        private Dictionary<string,Sprite> _tileSprites = new Dictionary<string, Sprite>();
 
         private Song Music1;
         private Song Music2;
@@ -50,7 +50,7 @@ namespace Match3Practice
 
         // Other
         private Random _random = new Random();
-        private int[,] _board;
+        private string[,] _board;
         private Timer _timer;
         private int[] _intervals;
         private int[] _counters;
@@ -131,13 +131,16 @@ namespace Match3Practice
         private void GenerateBoard()
         {
 
-            _board = new int[Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT];
+            _board = new string[Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT];
 
             for (int i = 0; i < Globals.BOARD_HEIGHT; i++)
             {
                 for (int j = 0; j < Globals.BOARD_WIDTH; j++)
                 {
-                    _board[i, j] = _random.Next(0, _tileSprites.Count - 1);  
+                    int color = _random.Next(0, 18); // Assuming 18 colors
+                    int variety = _random.Next(0, 6); // Assuming 6 varieties per color
+
+                    _board[i, j] = $"tile-{color}-{variety}";
                 }
             }
         }
@@ -150,19 +153,31 @@ namespace Match3Practice
             float sheetWidth = _tilesTexture.Width / tileWidth;
             float sheetHeight = _tilesTexture.Height / tileHeight;
 
-            int count = 1;
+            int color = 0;
+            int variety = 0;
 
             for (int i = 0; i < sheetHeight; i++)
-            {
-                for (int j = 0; j < sheetWidth; j++)
+            {             
+                for (int j = 0; j < 6; j++)
                 {
-                    _tileAtlas.AddRegion($"tile-{count}", j * tileWidth, i * tileHeight, tileWidth, tileHeight);
-                    _tileSprites.Add(_tileAtlas.CreateSprite($"tile-{count}"));
-                    count++;
+                    string tileKey = $"tile-{color}-{variety}";
+                    _tileAtlas.AddRegion(tileKey, j * tileWidth, i * tileHeight, tileWidth, tileHeight);
+                    _tileSprites.Add(tileKey, _tileAtlas.CreateSprite(tileKey));
+                    variety++;
                 }
+                color++;
+                variety = 0;
+                for (int j = 6; j < sheetWidth; j++)
+                {
+                    string tileKey = $"tile-{color}-{variety}";
+                    _tileAtlas.AddRegion(tileKey, j * tileWidth, i * tileHeight, tileWidth, tileHeight);
+                    _tileSprites.Add(tileKey, _tileAtlas.CreateSprite(tileKey));
+                    variety++;
+                }
+                color++;
+                variety = 0;
             }
         }
-
         protected override void Update(GameTime gameTime)
         {
             _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
