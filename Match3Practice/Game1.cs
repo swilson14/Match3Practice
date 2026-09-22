@@ -9,8 +9,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-using System;
 using System.Collections.Generic;
+using System;
 
 namespace Match3Practice
 {
@@ -50,10 +50,10 @@ namespace Match3Practice
 
         // Other
         private Random _random = new Random();
-        private string[,] _board;
         private Timer _timer;
         private int[] _intervals;
         private int[] _counters;
+        private Board _gameBoard;
 
 
         public Game1()
@@ -108,7 +108,7 @@ namespace Match3Practice
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
-            GenerateBoard();
+            _gameBoard = new Board(Globals.VIRTUAL_WIDTH-(Globals.TILE_SIZE*Globals.BOARD_WIDTH), Globals.TILE_SIZE+16,Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT, _tileSprites, _random);
 
             // Audio
             _clockSound = Content.Load<SoundEffect>("sounds/clock");
@@ -126,23 +126,6 @@ namespace Match3Practice
             _mediumFont = Content.Load<SpriteFont>("fonts/medium");
             _largeFont = Content.Load<SpriteFont>("fonts/large");
 
-        }
-
-        private void GenerateBoard()
-        {
-
-            _board = new string[Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT];
-
-            for (int i = 0; i < Globals.BOARD_HEIGHT; i++)
-            {
-                for (int j = 0; j < Globals.BOARD_WIDTH; j++)
-                {
-                    int color = _random.Next(0, 18); // Assuming 18 colors
-                    int variety = _random.Next(0, 6); // Assuming 6 varieties per color
-
-                    _board[i, j] = $"tile-{color}-{variety}";
-                }
-            }
         }
 
         private void PopulateTileSprites()
@@ -200,13 +183,7 @@ namespace Match3Practice
             // Apply the transformation to the sprite batch
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
-            for (int i = 0; i < Globals.BOARD_HEIGHT; i++)
-            {
-                for (int j = 0; j < Globals.BOARD_WIDTH; j++)
-                {
-                    _tileSprites[_board[i, j]].Draw(_spriteBatch, new Vector2(j * Globals.TILE_SIZE + 128, i * Globals.TILE_SIZE + 16));
-                }
-            }
+            _gameBoard.Draw(_spriteBatch);
 
             // Draw graphics
             //_stateMachine.Draw(_spriteBatch);

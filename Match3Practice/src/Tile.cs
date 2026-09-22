@@ -15,29 +15,29 @@ namespace Match3Practice.src
         public int GridY { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
-        public int Color { get; set; }
+        public int TileColor { get; set; }
         public int Variety { get; set; }
 
-        private Dictionary<string, Sprite> _tiles;
+        private Dictionary<string, Sprite> _tileSprites;
 
-        public Tile(int x, int y, int color, int variety, Dictionary<string, Sprite> tiles)
+        public Tile(int x, int y, int color, int variety, Dictionary<string, Sprite> tileSprites)
         {
             GridX = x;
             GridY = y;
             X = (GridX - 1) * Globals.TILE_SIZE;
             Y = (GridY - 1) * Globals.TILE_SIZE;
-            Color = color;
+            TileColor = color;
             Variety = variety;
-            _tiles = tiles;
+            _tileSprites = tileSprites;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, int boardX, int boardY)
         {
             // Draw a shadow
 
             // Draw the tile
-            var tileSprite = _tiles[$"tile-{Color}-{Variety}"];
-            //spriteBatch.Draw(tileSprite,);
+            var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
+            tileSprite.Draw(spriteBatch, new Vector2(boardX + X, boardY + Y));
         }
     }
 }
