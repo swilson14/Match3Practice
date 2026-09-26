@@ -29,6 +29,8 @@ namespace Match3Practice
         private Texture2D _backgroundTexture;
         private Texture2D _tilesTexture;
 
+        private Texture2D _pixel;
+
         // Fonts
         private SpriteFont _smallFont;
         private SpriteFont _mediumFont;
@@ -54,6 +56,10 @@ namespace Match3Practice
         private int[] _intervals;
         private int[] _counters;
         private Board _gameBoard;
+        private bool _highlightedTile;
+        private int _highlightedTileX;
+        private int _highlightedTileY;
+        private Tile _selectedTile;
 
 
         public Game1()
@@ -93,6 +99,13 @@ namespace Match3Practice
             _keyboard = new KeyboardInfo();
 
             _stateMachine = new StateMachine();
+
+            // Tile Swapping
+            _highlightedTile = false;
+            _highlightedTileX = 0;
+            _highlightedTileY = 0;
+            _selectedTile = _gameBoard.Tiles[0, 0];
+
             // Add states and then change to the initial state
 
         }
@@ -105,6 +118,8 @@ namespace Match3Practice
             _backgroundTexture = Content.Load<Texture2D>("graphics/background");
             _tilesTexture = Content.Load<Texture2D>("graphics/match3");
             _tileAtlas = new TextureAtlas(_tilesTexture);
+            _pixel = new Texture2D(GraphicsDevice, 1, 1);
+            _pixel.SetData(new Color[] { Color.White });
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
@@ -167,6 +182,77 @@ namespace Match3Practice
 
             _keyboard.Update();
 
+            int selectedTileX = _selectedTile.GridX;
+            int selectedTileY = _selectedTile.GridY;
+
+            if (_keyboard.WasKeyJustPressed(Keys.Up))
+            {
+                if (selectedTileY > 0)
+                {
+                    _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY - 1];
+                }
+            }
+            else if (_keyboard.WasKeyJustPressed(Keys.Down))
+            {
+                if (selectedTileY < Globals.BOARD_HEIGHT - 1)
+                {
+                    _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY + 1];
+                }
+            }
+            else if (_keyboard.WasKeyJustPressed(Keys.Left))
+            {
+                if (selectedTileX > 0)
+                {
+                    _selectedTile = _gameBoard.Tiles[selectedTileX - 1, selectedTileY];
+                }
+            }
+            else if (_keyboard.WasKeyJustPressed(Keys.Right))
+            {
+                if (selectedTileX < Globals.BOARD_WIDTH - 1)
+                {
+                    _selectedTile = _gameBoard.Tiles[selectedTileX + 1, selectedTileY];
+                }
+            }
+
+            if (_keyboard.WasKeyJustPressed(Keys.Enter))
+            {
+                if (!_highlightedTile)
+                {
+                    _highlightedTile = true;
+                    _highlightedTileX = _selectedTile.GridX;
+                    _highlightedTileY = _selectedTile.GridY;
+                }
+                else
+                {
+                    Tile tile1 = _selectedTile;
+                    Tile tile2 = _gameBoard.Tiles[_highlightedTileX, _highlightedTileY];
+
+                    int tempX = tile2.X;
+                    int tempY = tile2.Y;
+                    int tempGridX = tile2.GridX;
+                    int tempGridY = tile2.GridY;
+
+                    // Swap the positions of the two tiles
+                    Tile tempTile = tile1;
+                    _gameBoard.Tiles[tile1.GridX, tile1.GridY] = tile2;
+                    _gameBoard.Tiles[tile2.GridX, tile2.GridY] = tempTile;
+
+                    tile2.X = tile1.X;
+                    tile2.Y = tile1.Y;
+                    tile2.GridX = tile1.GridX;
+                    tile2.GridY = tile1.GridY;
+
+                    tile1.X = tempX;
+                    tile1.Y = tempY;
+                    tile1.GridX = tempGridX;
+                    tile1.GridY = tempGridY;
+
+                    _highlightedTile = false;
+                    _selectedTile = tile2;
+                }
+
+            }
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || _keyboard.WasKeyJustPressed(Keys.Escape))
                 Exit();
 
@@ -184,6 +270,22 @@ namespace Match3Practice
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
             _gameBoard.Draw(_spriteBatch);
+
+            // Draw the selected tile highlight
+            int lineThickness = 2;
+
+            // Top
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X +_selectedTile.X, _gameBoard.Y + _selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+            
+            // Bottom
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X, _gameBoard.Y + _selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+
+            // Left 
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X, _gameBoard.Y+_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+
+            // Right
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + _selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+
 
             // Draw graphics
             //_stateMachine.Draw(_spriteBatch);

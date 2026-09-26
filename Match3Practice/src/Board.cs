@@ -17,7 +17,7 @@ namespace Match3Practice.src
         public int Y;
         public int Width;
         public int Height;
-        private Tile[,] _tiles;
+        public Tile[,] Tiles;
         private Random _random = new Random();
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random)
         {
@@ -25,14 +25,14 @@ namespace Match3Practice.src
             Y = y;
             Width = width;
             Height = height;
-            _tiles = new Tile[width, height];
+            Tiles = new Tile[width, height];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
                     int color = _random.Next(0, 18); // Assuming 18 colors
                     int variety = _random.Next(0, 6); // Assuming 6 varieties per color
-                    _tiles[i, j] = new Tile(i, j, color, variety, tileSprites);
+                    Tiles[i, j] = new Tile(i, j, color, variety, tileSprites);
                 }
             }
         }
@@ -43,7 +43,7 @@ namespace Match3Practice.src
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    _tiles[i, j].Draw(spriteBatch, X, Y);
+                    Tiles[i, j].Draw(spriteBatch, X, Y);
                 }
             }
         }
