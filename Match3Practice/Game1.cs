@@ -11,6 +11,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using System.Collections.Generic;
 using System;
+using MonoGame.Extended.Tweening;
 
 namespace Match3Practice
 {
@@ -60,6 +61,8 @@ namespace Match3Practice
         private int _highlightedTileX;
         private int _highlightedTileY;
         private Tile _selectedTile;
+
+        private Tweener _tweener = new Tweener();
 
 
         public Game1()
@@ -178,6 +181,7 @@ namespace Match3Practice
         }
         protected override void Update(GameTime gameTime)
         {
+            _tweener.Update(gameTime.GetElapsedSeconds());
             _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             _keyboard.Update();
@@ -227,8 +231,8 @@ namespace Match3Practice
                     Tile tile1 = _selectedTile;
                     Tile tile2 = _gameBoard.Tiles[_highlightedTileX, _highlightedTileY];
 
-                    int tempX = tile2.X;
-                    int tempY = tile2.Y;
+                    float tempX = tile2.X;
+                    float tempY = tile2.Y;
                     int tempGridX = tile2.GridX;
                     int tempGridY = tile2.GridY;
 
@@ -237,13 +241,18 @@ namespace Match3Practice
                     _gameBoard.Tiles[tile1.GridX, tile1.GridY] = tile2;
                     _gameBoard.Tiles[tile2.GridX, tile2.GridY] = tempTile;
 
-                    tile2.X = tile1.X;
-                    tile2.Y = tile1.Y;
+                    _tweener.TweenTo(target: tile2, expression: tile => tile.X, toValue: tile1.X, duration: 0.2f)
+                        .Easing(EasingFunctions.Linear);
+                    _tweener.TweenTo(target: tile2, expression: tile => tile.Y, toValue: tile1.Y, duration: 0.2f)
+                        .Easing(EasingFunctions.Linear);
+                    _tweener.TweenTo(target: tile1, expression: tile => tile.X, toValue: tempX, duration: 0.2f)
+                        .Easing(EasingFunctions.Linear);
+                    _tweener.TweenTo(target: tile1, expression: tile => tile.Y, toValue: tempY, duration: 0.2f)
+                        .Easing(EasingFunctions.Linear);
+
                     tile2.GridX = tile1.GridX;
                     tile2.GridY = tile1.GridY;
 
-                    tile1.X = tempX;
-                    tile1.Y = tempY;
                     tile1.GridX = tempGridX;
                     tile1.GridY = tempGridY;
 
@@ -275,16 +284,16 @@ namespace Match3Practice
             int lineThickness = 2;
 
             // Top
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X +_selectedTile.X, _gameBoard.Y + _selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
             
             // Bottom
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X, _gameBoard.Y + _selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
 
             // Left 
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X, _gameBoard.Y+_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y+(int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
 
             // Right
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + _selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + _selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + (int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
 
 
             // Draw graphics

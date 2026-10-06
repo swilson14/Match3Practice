@@ -38,7 +38,7 @@ namespace Match3Practice.src.graphics
         /// <summary>
         /// Gets or sets the sprite effects to apply when rendering this sprite.
         /// </summary>
-        SpriteEffects Effects { get; set; } = SpriteEffects.None;
+        public SpriteEffects Effects { get; set; } = SpriteEffects.None;
 
         /// <summary>
         /// Gets or sets the layer depth to apply when rendering this sprite.

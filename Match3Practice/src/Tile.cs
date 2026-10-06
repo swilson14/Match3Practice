@@ -13,8 +13,8 @@ namespace Match3Practice.src
     {
         public int GridX { get; set; }
         public int GridY { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
         public int TileColor { get; set; }
         public int Variety { get; set; }
 
@@ -33,10 +33,11 @@ namespace Match3Practice.src
 
         public void Draw(SpriteBatch spriteBatch, int boardX, int boardY)
         {
+            var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
             // Draw a shadow
+            //tileSprite.Color = Color.White * 0.3f; 
 
             // Draw the tile
-            var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
             tileSprite.Draw(spriteBatch, new Vector2(boardX + X, boardY + Y));
         }
     }
