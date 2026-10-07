@@ -2,7 +2,10 @@
 using Match3Practice.src.graphics;
 using Match3Practice.src.States;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +19,24 @@ namespace Match3Practice.src.states
         private int _currentMenuItem = 0;
         private List<Color> _colors;
         private Dictionary<string, float> _letterTable;
-        private Timer _colorTimer;
+        private Timer _colorTimer = new Timer();
 
-        private int _transitionAlpha = 0;
+        private TransitionAlpha _transitionAlpha = new TransitionAlpha();
         private bool _pauseInput = false;
 
         private Board _showBoard;
 
         private Random _random;
 
-        public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random) : base(stateMachine)
+        private SoundEffect _selectSound;
+
+        private Tweener _tweener;
+
+        private StateMachine _stateMachine;
+
+
+        public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,
+            Dictionary<string, SoundEffect> soundEffects, Tweener tweener) : base(stateMachine)
         {
             _colors = new List<Color>
             {
@@ -49,16 +60,67 @@ namespace Match3Practice.src.states
 
             _colorTimer.Every(0.075f, () =>
             {
-                for (int i = 5; i >= 0; i--)
+                var lastColor = _colors[5];
+
+                for (int i = 5; i > 0; i--)
                 {
                     _colors[i] = _colors[i - 1];
                 }
+
+                _colors[0] = lastColor;
             });
 
             _random = random;
 
+            _selectSound = soundEffects["select"];
+
+            _tweener = tweener;
+
+            _stateMachine = stateMachine;
+
             // Generate board of tiles just for show.
             _showBoard = new Board(0,0,8,8, sprites, _random);
+
+            _transitionAlpha.Alpha = 0f;
+        }
+
+        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
+        {
+            _colorTimer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.WasKeyJustPressed(Keys.Escape))
+            {
+                Exit();
+            }
+
+            if (!_pauseInput)
+            {
+                if (keyboard.WasKeyJustPressed(Keys.Up) || keyboard.WasKeyJustPressed(Keys.Down))
+                {
+                    _currentMenuItem = _currentMenuItem == 0 ? 1 : 0;
+                    // play select sound
+                    _selectSound.Play();
+                }
+
+                if (keyboard.WasKeyJustPressed(Keys.Enter))
+                {
+                    if (_currentMenuItem == 0)
+                    {
+                        _tweener.TweenTo(target: _transitionAlpha, expression: Alpha => Alpha.Alpha, toValue: 1f, duration: 1f)
+                            .Easing(EasingFunctions.Linear).OnEnd(_ =>
+                            {
+                                _colorTimer.Clear();
+                                _stateMachine.ChangeState("begin-game", 1);
+                            });
+                        
+                    }
+                    else
+                    {
+                        Exit();
+                    }
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -66,9 +128,5 @@ namespace Match3Practice.src.states
             throw new NotImplementedException();
         }
 
-        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

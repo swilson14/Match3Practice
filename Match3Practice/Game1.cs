@@ -29,8 +29,9 @@ namespace Match3Practice
         // Graphics
         private Texture2D _backgroundTexture;
         private Texture2D _tilesTexture;
-
         private Texture2D _pixel;
+        private TextureAtlas _tileAtlas;
+        private Dictionary<string, Sprite> _tileSprites = new Dictionary<string, Sprite>();
 
         // Fonts
         private SpriteFont _smallFont;
@@ -44,12 +45,13 @@ namespace Match3Practice
         private SoundEffect _matchSound;
         private SoundEffect _nextLevelSound;
         private SoundEffect _selectSound;
-        private TextureAtlas _tileAtlas;
-        private Dictionary<string,Sprite> _tileSprites = new Dictionary<string, Sprite>();
+
 
         private Song Music1;
         private Song Music2;
         private Song Music3;
+
+        
 
         // Other
         private Random _random = new Random();
@@ -109,7 +111,18 @@ namespace Match3Practice
             _highlightedTileY = 0;
             _selectedTile = _gameBoard.Tiles[0, 0];
 
-            // Add states and then change to the initial state
+            // populate sound effects dictionary
+            Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>
+            {
+                { "clock", _clockSound },
+                { "error", _errorSound },
+                { "game-over", _gameOverSound },
+                { "match", _matchSound },
+                { "next-level", _nextLevelSound },
+                { "select", _selectSound }
+            };
+
+
 
         }
 
@@ -261,9 +274,6 @@ namespace Match3Practice
                 }
 
             }
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || _keyboard.WasKeyJustPressed(Keys.Escape))
-                Exit();
 
             base.Update(gameTime);
         }
