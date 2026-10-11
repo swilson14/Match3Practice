@@ -24,8 +24,8 @@ namespace Match3Practice.src
         {
             GridX = x;
             GridY = y;
-            X = (GridX - 1) * Globals.TILE_SIZE;
-            Y = (GridY - 1) * Globals.TILE_SIZE;
+            X = GridX * Globals.TILE_SIZE;
+            Y = GridY * Globals.TILE_SIZE;
             TileColor = color;
             Variety = variety;
             _tileSprites = tileSprites;

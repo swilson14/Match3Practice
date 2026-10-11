@@ -12,6 +12,7 @@ using MonoGame.Extended.ViewportAdapters;
 using System.Collections.Generic;
 using System;
 using MonoGame.Extended.Tweening;
+using Match3Practice.src.states;
 
 namespace Match3Practice
 {
@@ -78,6 +79,14 @@ namespace Match3Practice
         {
             base.Initialize();
 
+            // Window Size
+            _graphics.PreferredBackBufferWidth = Globals.WINDOW_WIDTH;
+            _graphics.PreferredBackBufferHeight = Globals.WINDOW_HEIGHT;
+            _graphics.ApplyChanges();
+
+            _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT);
+            _camera = new OrthographicCamera(_viewportAdapter);
+
             _timer = new Timer();
 
             // Timer example
@@ -88,21 +97,12 @@ namespace Match3Practice
             {
                 int index = i;
                 _timer.Every(_intervals[index], () =>
-                { 
+                {
                     _counters[index]++;
                 });
             }
 
-            // Window Size
-            _graphics.PreferredBackBufferWidth = Globals.WINDOW_WIDTH;
-            _graphics.PreferredBackBufferHeight = Globals.WINDOW_HEIGHT;
-            _graphics.ApplyChanges();
-
-            _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT);
-            _camera = new OrthographicCamera(_viewportAdapter);
-
             _keyboard = new KeyboardInfo();
-
             _stateMachine = new StateMachine();
 
             // Tile Swapping
@@ -122,8 +122,21 @@ namespace Match3Practice
                 { "select", _selectSound }
             };
 
+            // Populate fonts dictionary
+            Dictionary<string, SpriteFont> fonts = new Dictionary<string, SpriteFont>
+            {
+                { "small", _smallFont },
+                { "medium", _mediumFont },
+                { "large", _largeFont }
+            };
 
 
+            _stateMachine.States = new Dictionary<string, State>
+            {
+                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts) },
+            };
+
+            _stateMachine.ChangeState("start");
         }
 
         protected override void LoadContent()
@@ -194,86 +207,89 @@ namespace Match3Practice
         }
         protected override void Update(GameTime gameTime)
         {
-            _tweener.Update(gameTime.GetElapsedSeconds());
-            _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            //_tweener.Update(gameTime.GetElapsedSeconds());
+            //_timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
 
             _keyboard.Update();
+            _stateMachine.Update(gameTime, _keyboard);
+            //_keyboard.Update();
 
-            int selectedTileX = _selectedTile.GridX;
-            int selectedTileY = _selectedTile.GridY;
+            //int selectedTileX = _selectedTile.GridX;
+            //int selectedTileY = _selectedTile.GridY;
 
-            if (_keyboard.WasKeyJustPressed(Keys.Up))
-            {
-                if (selectedTileY > 0)
-                {
-                    _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY - 1];
-                }
-            }
-            else if (_keyboard.WasKeyJustPressed(Keys.Down))
-            {
-                if (selectedTileY < Globals.BOARD_HEIGHT - 1)
-                {
-                    _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY + 1];
-                }
-            }
-            else if (_keyboard.WasKeyJustPressed(Keys.Left))
-            {
-                if (selectedTileX > 0)
-                {
-                    _selectedTile = _gameBoard.Tiles[selectedTileX - 1, selectedTileY];
-                }
-            }
-            else if (_keyboard.WasKeyJustPressed(Keys.Right))
-            {
-                if (selectedTileX < Globals.BOARD_WIDTH - 1)
-                {
-                    _selectedTile = _gameBoard.Tiles[selectedTileX + 1, selectedTileY];
-                }
-            }
+            //if (_keyboard.WasKeyJustPressed(Keys.Up))
+            //{
+            //    if (selectedTileY > 0)
+            //    {
+            //        _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY - 1];
+            //    }
+            //}
+            //else if (_keyboard.WasKeyJustPressed(Keys.Down))
+            //{
+            //    if (selectedTileY < Globals.BOARD_HEIGHT - 1)
+            //    {
+            //        _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY + 1];
+            //    }
+            //}
+            //else if (_keyboard.WasKeyJustPressed(Keys.Left))
+            //{
+            //    if (selectedTileX > 0)
+            //    {
+            //        _selectedTile = _gameBoard.Tiles[selectedTileX - 1, selectedTileY];
+            //    }
+            //}
+            //else if (_keyboard.WasKeyJustPressed(Keys.Right))
+            //{
+            //    if (selectedTileX < Globals.BOARD_WIDTH - 1)
+            //    {
+            //        _selectedTile = _gameBoard.Tiles[selectedTileX + 1, selectedTileY];
+            //    }
+            //}
 
-            if (_keyboard.WasKeyJustPressed(Keys.Enter))
-            {
-                if (!_highlightedTile)
-                {
-                    _highlightedTile = true;
-                    _highlightedTileX = _selectedTile.GridX;
-                    _highlightedTileY = _selectedTile.GridY;
-                }
-                else
-                {
-                    Tile tile1 = _selectedTile;
-                    Tile tile2 = _gameBoard.Tiles[_highlightedTileX, _highlightedTileY];
+            //if (_keyboard.WasKeyJustPressed(Keys.Enter))
+            //{
+            //    if (!_highlightedTile)
+            //    {
+            //        _highlightedTile = true;
+            //        _highlightedTileX = _selectedTile.GridX;
+            //        _highlightedTileY = _selectedTile.GridY;
+            //    }
+            //    else
+            //    {
+            //        Tile tile1 = _selectedTile;
+            //        Tile tile2 = _gameBoard.Tiles[_highlightedTileX, _highlightedTileY];
 
-                    float tempX = tile2.X;
-                    float tempY = tile2.Y;
-                    int tempGridX = tile2.GridX;
-                    int tempGridY = tile2.GridY;
+            //        float tempX = tile2.X;
+            //        float tempY = tile2.Y;
+            //        int tempGridX = tile2.GridX;
+            //        int tempGridY = tile2.GridY;
 
-                    // Swap the positions of the two tiles
-                    Tile tempTile = tile1;
-                    _gameBoard.Tiles[tile1.GridX, tile1.GridY] = tile2;
-                    _gameBoard.Tiles[tile2.GridX, tile2.GridY] = tempTile;
+            //        // Swap the positions of the two tiles
+            //        Tile tempTile = tile1;
+            //        _gameBoard.Tiles[tile1.GridX, tile1.GridY] = tile2;
+            //        _gameBoard.Tiles[tile2.GridX, tile2.GridY] = tempTile;
 
-                    _tweener.TweenTo(target: tile2, expression: tile => tile.X, toValue: tile1.X, duration: 0.2f)
-                        .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: tile2, expression: tile => tile.Y, toValue: tile1.Y, duration: 0.2f)
-                        .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: tile1, expression: tile => tile.X, toValue: tempX, duration: 0.2f)
-                        .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: tile1, expression: tile => tile.Y, toValue: tempY, duration: 0.2f)
-                        .Easing(EasingFunctions.Linear);
+            //        _tweener.TweenTo(target: tile2, expression: tile => tile.X, toValue: tile1.X, duration: 0.2f)
+            //            .Easing(EasingFunctions.Linear);
+            //        _tweener.TweenTo(target: tile2, expression: tile => tile.Y, toValue: tile1.Y, duration: 0.2f)
+            //            .Easing(EasingFunctions.Linear);
+            //        _tweener.TweenTo(target: tile1, expression: tile => tile.X, toValue: tempX, duration: 0.2f)
+            //            .Easing(EasingFunctions.Linear);
+            //        _tweener.TweenTo(target: tile1, expression: tile => tile.Y, toValue: tempY, duration: 0.2f)
+            //            .Easing(EasingFunctions.Linear);
 
-                    tile2.GridX = tile1.GridX;
-                    tile2.GridY = tile1.GridY;
+            //        tile2.GridX = tile1.GridX;
+            //        tile2.GridY = tile1.GridY;
 
-                    tile1.GridX = tempGridX;
-                    tile1.GridY = tempGridY;
+            //        tile1.GridX = tempGridX;
+            //        tile1.GridY = tempGridY;
 
-                    _highlightedTile = false;
-                    _selectedTile = tile2;
-                }
+            //        _highlightedTile = false;
+            //        _selectedTile = tile2;
+            //    }
 
-            }
+            //}
 
             base.Update(gameTime);
         }
@@ -288,22 +304,24 @@ namespace Match3Practice
             // Apply the transformation to the sprite batch
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
-            _gameBoard.Draw(_spriteBatch);
+            _stateMachine.Draw(_spriteBatch);
 
-            // Draw the selected tile highlight
-            int lineThickness = 2;
+            //_gameBoard.Draw(_spriteBatch);
 
-            // Top
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
-            
-            // Bottom
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+            //// Draw the selected tile highlight
+            //int lineThickness = 2;
 
-            // Left 
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y+(int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+            //// Top
+            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
 
-            // Right
-            _spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + (int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+            //// Bottom
+            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
+
+            //// Left 
+            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y+(int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
+
+            //// Right
+            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + (int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
 
 
             // Draw graphics
@@ -312,7 +330,7 @@ namespace Match3Practice
 
             // Draw Text.
             _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
-
+            _stateMachine.DrawText(_spriteBatch, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             //for (int i = 0; i < _intervals.Length; i++)
             //{
             //    _spriteBatch.DrawString(_mediumFont, $"Timer {i + 1}: {_counters[i]}", new Vector2(10, 10 + i * 40), Color.White);

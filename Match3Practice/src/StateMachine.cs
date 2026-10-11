@@ -1,5 +1,5 @@
 ﻿using Match3Practice.Input;
-using Match3Practice.src.States;
+using Match3Practice.src.states;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

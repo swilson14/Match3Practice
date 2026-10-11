@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Match3Practice.src.States
+namespace Match3Practice.src.states
 {
     public abstract class State
     {

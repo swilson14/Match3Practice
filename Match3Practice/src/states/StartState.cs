@@ -1,6 +1,6 @@
 ﻿using Match3Practice.Input;
 using Match3Practice.src.graphics;
-using Match3Practice.src.States;
+using Match3Practice.src.states;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Match3Practice.src.states
 {
@@ -32,12 +33,19 @@ namespace Match3Practice.src.states
 
         private Tweener _tweener;
 
-        private StateMachine _stateMachine;
+        private Texture2D _pixel;
 
+        private SpriteFont _smallFont;
+        private SpriteFont _mediumFont;
+        private SpriteFont _largeFont;
 
         public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,
-            Dictionary<string, SoundEffect> soundEffects, Tweener tweener) : base(stateMachine)
+            Dictionary<string, SoundEffect> soundEffects, Tweener tweener, Texture2D pixel, Dictionary<string, SpriteFont> fonts) : base(stateMachine)
         {
+
+            _pixel = pixel;
+            _largeFont = fonts["large"];    
+
             _colors = new List<Color>
             {
               new Color(217, 87, 99),
@@ -79,7 +87,8 @@ namespace Match3Practice.src.states
             _stateMachine = stateMachine;
 
             // Generate board of tiles just for show.
-            _showBoard = new Board(0,0,8,8, sprites, _random);
+            _showBoard = new Board((Globals.VIRTUAL_WIDTH - 8 * Globals.TILE_SIZE) / 2, (Globals.VIRTUAL_HEIGHT - 8 * Globals.TILE_SIZE) / 2,
+                8,8, sprites, _random);
 
             _transitionAlpha.Alpha = 0f;
         }
@@ -125,8 +134,49 @@ namespace Match3Practice.src.states
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            _showBoard.Draw(spriteBatch);
+
+            // Keep background and board dark with a semi-transparent rectangle
+            spriteBatch.Draw(_pixel, new Rectangle(0, 0, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT), Color.Black * 0.5f);
+
+            // Draw semi transparent background rectangle
+            spriteBatch.Draw(_pixel, new Rectangle(Globals.VIRTUAL_WIDTH / 2 - 76, Globals.VIRTUAL_HEIGHT / 2 - 71, 150, 58), Color.White * 0.5f);
+
+            // Draw semi transparent background rectangle
+            spriteBatch.Draw(_pixel, new Rectangle(Globals.VIRTUAL_WIDTH / 2 - 76, Globals.VIRTUAL_HEIGHT / 2 + 1, 150, 58), Color.White * 0.5f);
+
+            // Draw transition rectangle
+            spriteBatch.Draw(_pixel, new Rectangle(0, 0, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT), Color.White * _transitionAlpha.Alpha);
         }
+
+        public override void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight)
+        {
+            DrawMatch3Text(spriteBatch, viewportWidth, viewportHeight, -60);
+            //DrawOptionsText();
+        }
+
+        private void DrawMatch3Text(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
+        {
+            string match3Text = "MATCH 3";
+            // Draw Match 3 Shadows
+            DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, match3Text, viewportHeight / 2 + y);
+
+            // Print Match 3 Letters with color transition
+
+        }
+
+        private void DrawOptionsText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
+        {
+
+        }
+
+        private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y)
+        {
+            float textWidth = _largeFont.MeasureString(text).X;
+            spriteBatch.DrawString(_largeFont, text, new Vector2(2+(viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+        }
+
+
 
     }
 }
