@@ -151,7 +151,7 @@ namespace Match3Practice.src.states
 
         public override void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight)
         {
-            DrawMatch3Text(spriteBatch, viewportWidth, viewportHeight, -60);
+            DrawMatch3Text(spriteBatch, viewportWidth, viewportHeight, -150);
             //DrawOptionsText();
         }
 
@@ -173,7 +173,10 @@ namespace Match3Practice.src.states
         private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y)
         {
             float textWidth = _largeFont.MeasureString(text).X;
-            spriteBatch.DrawString(_largeFont, text, new Vector2(2+(viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(_largeFont, text, new Vector2(2 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(_largeFont, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(_largeFont, text, new Vector2((viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(_largeFont, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 2), new Color(34, 32, 52));
         }
 
 
