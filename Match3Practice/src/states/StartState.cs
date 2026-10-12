@@ -19,7 +19,7 @@ namespace Match3Practice.src.states
     {
         private int _currentMenuItem = 0;
         private List<Color> _colors;
-        private Dictionary<string, float> _letterTable;
+        private List<Tuple<string, float>> _letterTable;
         private Timer _colorTimer = new Timer();
 
         private TransitionAlpha _transitionAlpha = new TransitionAlpha();
@@ -56,14 +56,14 @@ namespace Match3Practice.src.states
               new Color(223, 113, 38),
             };
 
-            _letterTable = new Dictionary<string, float>
+            _letterTable = new List<Tuple<string, float>>
             {
-                { "M", -108f },
-                { "A", -64f },
-                { "T", -28f },
-                { "C", 2f },
-                { "H", 40f },
-                { "3", 112f },
+                { new Tuple<string, float>("M", -110f) },
+                { new Tuple<string, float>("A", -64f) },
+                { new Tuple<string, float>("T", -28f) },
+                { new Tuple<string, float>("C", 2f) },
+                { new Tuple<string, float>("H", 40f) },
+                { new Tuple<string, float>("3", 115f) },
             };
 
             _colorTimer.Every(0.075f, () =>
@@ -158,11 +158,19 @@ namespace Match3Practice.src.states
         private void DrawMatch3Text(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
         {
             string match3Text = "MATCH 3";
+
             // Draw Match 3 Shadows
             DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, match3Text, viewportHeight / 2 + y);
 
             // Print Match 3 Letters with color transition
+            for (int i = 0; i < _letterTable.Count; i++)
+            {
+                string letter = _letterTable[i].Item1;
+                float textWidth = _largeFont.MeasureString(letter).X;
+                float letterX = ((_letterTable[i].Item2 * 2.5f) + viewportWidth - textWidth) / 2;
 
+                spriteBatch.DrawString(_largeFont, letter, new Vector2(letterX, viewportHeight / 2 + y), _colors[i]);
+            }
         }
 
         private void DrawOptionsText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
