@@ -39,12 +39,16 @@ namespace Match3Practice.src.states
         private SpriteFont _mediumFont;
         private SpriteFont _largeFont;
 
+        private Game _game;
+
+
         public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,
-            Dictionary<string, SoundEffect> soundEffects, Tweener tweener, Texture2D pixel, Dictionary<string, SpriteFont> fonts) : base(stateMachine)
+            Dictionary<string, SoundEffect> soundEffects, Tweener tweener, Texture2D pixel, Dictionary<string, SpriteFont> fonts, Game game) : base(stateMachine)
         {
 
             _pixel = pixel;
             _largeFont = fonts["large"];    
+            _mediumFont = fonts["medium"];
 
             _colors = new List<Color>
             {
@@ -58,12 +62,12 @@ namespace Match3Practice.src.states
 
             _letterTable = new List<Tuple<string, float>>
             {
-                { new Tuple<string, float>("M", -110f) },
-                { new Tuple<string, float>("A", -64f) },
+                { new Tuple<string, float>("M", -113f) },
+                { new Tuple<string, float>("A", -66f) },
                 { new Tuple<string, float>("T", -28f) },
-                { new Tuple<string, float>("C", 2f) },
-                { new Tuple<string, float>("H", 40f) },
-                { new Tuple<string, float>("3", 115f) },
+                { new Tuple<string, float>("C", 3f) },
+                { new Tuple<string, float>("H", 42f) },
+                { new Tuple<string, float>("3", 118f) },
             };
 
             _colorTimer.Every(0.075f, () =>
@@ -91,6 +95,8 @@ namespace Match3Practice.src.states
                 8,8, sprites, _random);
 
             _transitionAlpha.Alpha = 0f;
+
+            _game = game;
         }
 
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
@@ -100,7 +106,7 @@ namespace Match3Practice.src.states
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.WasKeyJustPressed(Keys.Escape))
             {
-                Exit();
+                _game.Exit();
             }
 
             if (!_pauseInput)
@@ -126,7 +132,7 @@ namespace Match3Practice.src.states
                     }
                     else
                     {
-                        Exit();
+                        _game.Exit();
                     }
                 }
             }
@@ -152,7 +158,7 @@ namespace Match3Practice.src.states
         public override void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight)
         {
             DrawMatch3Text(spriteBatch, viewportWidth, viewportHeight, -150);
-            //DrawOptionsText();
+            DrawOptionsText(spriteBatch, viewportWidth, viewportHeight, 30);
         }
 
         private void DrawMatch3Text(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
@@ -160,7 +166,7 @@ namespace Match3Practice.src.states
             string match3Text = "MATCH 3";
 
             // Draw Match 3 Shadows
-            DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, match3Text, viewportHeight / 2 + y);
+            DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, match3Text, viewportHeight / 2 + y, _largeFont);
 
             // Print Match 3 Letters with color transition
             for (int i = 0; i < _letterTable.Count; i++)
@@ -175,16 +181,38 @@ namespace Match3Practice.src.states
 
         private void DrawOptionsText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
         {
+            DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, "START", viewportHeight / 2 + y, _mediumFont);
+
+            if (_currentMenuItem == 0)
+            {
+                spriteBatch.DrawString(_mediumFont, "START", new Vector2((viewportWidth - _mediumFont.MeasureString("START").X) / 2, viewportHeight / 2 + y), new Color(99, 155, 255));
+            }
+            else
+            {
+                spriteBatch.DrawString(_mediumFont, "START", new Vector2((viewportWidth - _mediumFont.MeasureString("START").X) / 2, viewportHeight / 2 + y), new Color(48, 96, 130));
+            }
+
+            DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, "Quit Game", viewportHeight / 2 + y + 66, _mediumFont);
+
+            if (_currentMenuItem == 1)
+            {
+                spriteBatch.DrawString(_mediumFont, "Quit Game", new Vector2((viewportWidth - _mediumFont.MeasureString("Quit Game").X) / 2, viewportHeight / 2 + y + 66), new Color(99, 155, 255));
+            }
+            else
+            {
+                spriteBatch.DrawString(_mediumFont, "Quit Game", new Vector2((viewportWidth - _mediumFont.MeasureString("Quit Game").X) / 2, viewportHeight / 2 + y + 66), new Color(48, 96, 130));
+            }
+
 
         }
 
-        private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y)
+        private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y, SpriteFont font)
         {
-            float textWidth = _largeFont.MeasureString(text).X;
-            spriteBatch.DrawString(_largeFont, text, new Vector2(2 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
-            spriteBatch.DrawString(_largeFont, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
-            spriteBatch.DrawString(_largeFont, text, new Vector2((viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
-            spriteBatch.DrawString(_largeFont, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 2), new Color(34, 32, 52));
+            float textWidth = font.MeasureString(text).X;
+            spriteBatch.DrawString(font, text, new Vector2(2 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(font, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(font, text, new Vector2((viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
+            spriteBatch.DrawString(font, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 2), new Color(34, 32, 52));
         }
 
 

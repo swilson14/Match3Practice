@@ -64,8 +64,11 @@ namespace Match3Practice
         private int _highlightedTileX;
         private int _highlightedTileY;
         private Tile _selectedTile;
-
         private Tweener _tweener = new Tweener();
+
+        const float BACKGROUND_SCROLL = 80f;
+
+        private float _backgroundX = 0f;
 
 
         public Game1()
@@ -133,7 +136,7 @@ namespace Match3Practice
 
             _stateMachine.States = new Dictionary<string, State>
             {
-                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts) },
+                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
             };
 
             _stateMachine.ChangeState("start");
@@ -210,10 +213,15 @@ namespace Match3Practice
             //_tweener.Update(gameTime.GetElapsedSeconds());
             //_timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
+            _backgroundX = _backgroundX - BACKGROUND_SCROLL * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_backgroundX <= -1024 + Globals.VIRTUAL_WIDTH - 4 + 51)
+            {
+                _backgroundX = 0;
+            }
 
             _keyboard.Update();
             _stateMachine.Update(gameTime, _keyboard);
-            //_keyboard.Update();
 
             //int selectedTileX = _selectedTile.GridX;
             //int selectedTileY = _selectedTile.GridY;
@@ -304,6 +312,8 @@ namespace Match3Practice
             // Apply the transformation to the sprite batch
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
+            _spriteBatch.Draw(_backgroundTexture, new Vector2(_backgroundX, 0), Color.White);
+
             _stateMachine.Draw(_spriteBatch);
 
             //_gameBoard.Draw(_spriteBatch);
@@ -330,6 +340,7 @@ namespace Match3Practice
 
             // Draw Text.
             _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+            
             _stateMachine.DrawText(_spriteBatch, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             //for (int i = 0; i < _intervals.Length; i++)
             //{
