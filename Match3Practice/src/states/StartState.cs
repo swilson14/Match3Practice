@@ -214,8 +214,5 @@ namespace Match3Practice.src.states
             spriteBatch.DrawString(font, text, new Vector2((viewportWidth - textWidth) / 2, y + 1), new Color(34, 32, 52));
             spriteBatch.DrawString(font, text, new Vector2(1 + (viewportWidth - textWidth) / 2, y + 2), new Color(34, 32, 52));
         }
-
-
-
     }
 }

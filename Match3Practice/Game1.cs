@@ -137,6 +137,7 @@ namespace Match3Practice
             _stateMachine.States = new Dictionary<string, State>
             {
                 { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
+                { "game-over", new GameOverState(_stateMachine, fonts, _pixel) }
             };
 
             _stateMachine.ChangeState("start");
