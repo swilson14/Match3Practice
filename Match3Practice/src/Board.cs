@@ -19,6 +19,9 @@ namespace Match3Practice.src
         public int Height;
         public Tile[,] Tiles;
         private Random _random = new Random();
+
+        public List<Match> Matches { get; set; } = new List<Match>();
+
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random)
         {
             X = x;
