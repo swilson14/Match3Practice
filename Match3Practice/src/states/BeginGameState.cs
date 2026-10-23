@@ -37,7 +37,7 @@ namespace Match3Practice.src.states
             _transitionAlpha = new TransitionAlpha();
             _transitionAlpha.Alpha = 1f;
             _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, tileSprites, random);
-            LevelLabelY = -64f;
+            LevelLabelY = -160;
             _tweener = new Tweener();
             _pixel = pixel;
             _largeFont = fonts["large"];
