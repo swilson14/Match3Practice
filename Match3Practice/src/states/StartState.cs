@@ -22,7 +22,7 @@ namespace Match3Practice.src.states
         private List<Tuple<string, float>> _letterTable;
         private Timer _colorTimer = new Timer();
 
-        private TransitionAlpha _transitionAlpha = new TransitionAlpha();
+        private TransitionAlpha _transitionAlpha = new TransitionAlpha(0f);
         private bool _pauseInput = false;
 
         private Board _showBoard;

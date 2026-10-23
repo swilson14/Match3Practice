@@ -90,29 +90,10 @@ namespace Match3Practice
             _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Globals.VIRTUAL_WIDTH, Globals.VIRTUAL_HEIGHT);
             _camera = new OrthographicCamera(_viewportAdapter);
 
-            _timer = new Timer();
-
-            // Timer example
-            _intervals = new int[] { 1, 2, 4, 3, 2, 8 };
-            _counters = new int[] { 0, 0, 0, 0, 0, 0 };
-
-            for (int i = 0; i < _intervals.Length; i++)
-            {
-                int index = i;
-                _timer.Every(_intervals[index], () =>
-                {
-                    _counters[index]++;
-                });
-            }
-
             _keyboard = new KeyboardInfo();
             _stateMachine = new StateMachine();
 
-            // Tile Swapping
-            _highlightedTile = false;
-            _highlightedTileX = 0;
-            _highlightedTileY = 0;
-            _selectedTile = _gameBoard.Tiles[0, 0];
+
 
             // populate sound effects dictionary
             Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>
@@ -157,7 +138,8 @@ namespace Match3Practice
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
-            _gameBoard = new Board(Globals.VIRTUAL_WIDTH-(Globals.TILE_SIZE*Globals.BOARD_WIDTH), Globals.TILE_SIZE+16,Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT, _tileSprites, _random);
+            _gameBoard = new Board(Globals.VIRTUAL_WIDTH-(Globals.TILE_SIZE*Globals.BOARD_WIDTH), 
+                Globals.TILE_SIZE+16,Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT, _tileSprites, _random);
 
             // Audio
             _clockSound = Content.Load<SoundEffect>("sounds/clock");

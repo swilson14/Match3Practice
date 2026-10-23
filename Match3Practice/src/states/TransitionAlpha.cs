@@ -3,5 +3,10 @@
     public class TransitionAlpha
     {
         public float Alpha { get; set; }
+
+        public TransitionAlpha(float alpha)
+        {
+            Alpha = alpha;
+        }
     }
 }
