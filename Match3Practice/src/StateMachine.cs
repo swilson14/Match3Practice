@@ -38,5 +38,10 @@ namespace Match3Practice.src
             CurrentState.DrawText(spriteBatch, viewportWidth, viewportHeight);
         }
 
+        public void DrawForeground(SpriteBatch spriteBatch)
+        {
+            CurrentState.DrawForeground(spriteBatch);
+        }
+
     }
 }

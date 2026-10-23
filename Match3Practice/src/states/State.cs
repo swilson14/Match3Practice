@@ -27,5 +27,7 @@ namespace Match3Practice.src.states
         public abstract void Draw(SpriteBatch spriteBatch);
 
         public virtual void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight) { }
+
+        public virtual void DrawForeground(SpriteBatch spriteBatch) { }
     }
 }
