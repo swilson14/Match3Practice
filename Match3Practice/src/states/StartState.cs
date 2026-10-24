@@ -104,7 +104,7 @@ namespace Match3Practice.src.states
             _colorTimer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.WasKeyJustPressed(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Escape))
             {
                 _game.Exit();
             }
