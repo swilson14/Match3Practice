@@ -13,12 +13,15 @@ namespace Match3Practice.src.states
 {
     public class GameOverState : State
     {
+        // State
         private int _score;
 
+        // Fonts
         private SpriteFont _smallFont;
         private SpriteFont _mediumFont;
         private SpriteFont _largeFont;
 
+        // Graphics
         private Texture2D _pixel;
 
         public GameOverState(StateMachine stateMachine, Dictionary<string, SpriteFont> fonts, Texture2D pixel) : base(stateMachine)

@@ -17,29 +17,26 @@ namespace Match3Practice.src.states
 {
     public class StartState : State
     {
+        // Menu / Gameplay
         private int _currentMenuItem = 0;
         private List<Color> _colors;
         private List<Tuple<string, float>> _letterTable;
         private Timer _colorTimer = new Timer();
-
         private TransitionAlpha _transitionAlpha = new TransitionAlpha(0f);
         private bool _pauseInput = false;
-
         private Board _showBoard;
-
         private Random _random;
+        private Tweener _tweener;
+        private Game _game;
 
+        // Audio
         private SoundEffect _selectSound;
 
-        private Tweener _tweener;
-
+        // Graphics
         private Texture2D _pixel;
-
         private SpriteFont _smallFont;
         private SpriteFont _mediumFont;
         private SpriteFont _largeFont;
-
-        private Game _game;
 
 
         public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,

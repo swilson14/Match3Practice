@@ -13,6 +13,7 @@ namespace Match3Practice.src.states
 {
     public class PlayState : State
     {
+        // Gameplay / State
         private TransitionAlpha _transitionAlpha;
         private bool _highlightedTile;
         private bool _canInput;
@@ -22,17 +23,15 @@ namespace Match3Practice.src.states
         private int _score;
         private int _timerCountdown;
         private Timer _timer;
-
         private int _level;
-
         private Board _board;
-
-        private SoundEffect _clockSound;
-
-        private SoundEffect _gameOverSound;
-
         private float _scoreGoal;
 
+        // Audio
+        private SoundEffect _clockSound;
+        private SoundEffect _gameOverSound;
+
+        // Game / System
         private Game _game;
 
 

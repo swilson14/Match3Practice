@@ -13,22 +13,17 @@ namespace Match3Practice.src.states
 {
     public class BeginGameState : State
     {
-
+        // State / Transition
         private TransitionAlpha _transitionAlpha;
-
+        private Tweener _tweener;
+        private int _level;
         private Board _board;
-
         public float LevelLabelY;
 
-        private int _level;
-
-        private Tweener _tweener;
-
+        // Graphics
         private Texture2D _pixel;
-
         private SpriteFont _largeFont;
-
-        GraphicsDevice _graphicsDevice;
+        private GraphicsDevice _graphicsDevice;
 
 
         public BeginGameState(StateMachine stateMachine, Dictionary<string, Sprite> tileSprites,
