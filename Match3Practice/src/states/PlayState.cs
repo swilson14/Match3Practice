@@ -240,11 +240,9 @@ namespace Match3Practice.src.states
             // Right
             spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX + Globals.TILE_SIZE - lineThickness, _board.Y + offsetY, lineThickness, Globals.TILE_SIZE), cursorColor);
 
-            Color guiColor = new Color(56, 56, 56, 234 / 255);
-
+            Color guiColor = Color.FromNonPremultiplied(56, 56, 56, 234);
 
             spriteBatch.Draw(_pixel, new Rectangle(16, 16, 186, 116), guiColor);
-
         }
 
         public override void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight)
@@ -262,10 +260,10 @@ namespace Match3Practice.src.states
             float timerTextWidth = _mediumFont.MeasureString(timerText).X;
 
             Color textColor = new Color(99, 155, 255);
-            spriteBatch.DrawString(_mediumFont, levelText, new Vector2((500 - levelTextWidth) / 2, 60), textColor);
-            spriteBatch.DrawString(_mediumFont, scoreText, new Vector2((500 - scoreTextWidth) / 2, 130), textColor);
-            spriteBatch.DrawString(_mediumFont, goalText, new Vector2((500 - goalTextWidth) / 2, 200), textColor);
-            spriteBatch.DrawString(_mediumFont, timerText, new Vector2((500 - timerTextWidth) / 2, 270), textColor);
+            spriteBatch.DrawString(_mediumFont, levelText, new Vector2((550 - levelTextWidth) / 2, 60), textColor);
+            spriteBatch.DrawString(_mediumFont, scoreText, new Vector2((550 - scoreTextWidth) / 2, 130), textColor);
+            spriteBatch.DrawString(_mediumFont, goalText, new Vector2((550 - goalTextWidth) / 2, 200), textColor);
+            spriteBatch.DrawString(_mediumFont, timerText, new Vector2((550 - timerTextWidth) / 2, 270), textColor);
         }
 
         public void CalculateMatches()
