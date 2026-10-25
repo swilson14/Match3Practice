@@ -34,6 +34,7 @@ namespace Match3Practice.src
         public void Draw(SpriteBatch spriteBatch, int boardX, int boardY)
         {
             var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
+
             // Draw a shadow
             //tileSprite.Color = Color.White * 0.3f; 
 

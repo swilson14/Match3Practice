@@ -34,26 +34,31 @@ namespace Match3Practice.src.states
         private SoundEffect _clockSound;
         private SoundEffect _gameOverSound;
         private SoundEffect _nextLevelSound;
-        private SoundEffect _playSound;
+        private SoundEffect _selectSound;
         private SoundEffect _errorSound;
 
         // Game / System
         private Game _game;
 
+        // Graphics
+        Texture2D _pixel;
 
-        public PlayState(StateMachine stateMachine, Dictionary<string, SoundEffect> soundEffects, Game game) : base(stateMachine)
+
+        public PlayState(StateMachine stateMachine, Dictionary<string, SoundEffect> soundEffects, Game game, Texture2D pixel) : base(stateMachine)
         {
             _transitionAlpha = new TransitionAlpha(1f);
             _clockSound = soundEffects["clock"];
             _gameOverSound = soundEffects["game-over"];
             _nextLevelSound = soundEffects["next-level"];
             _errorSound = soundEffects["error"];
+            _selectSound = soundEffects["select"];
             _boardHighlightX = 0;
             _boardHighlightY = 0;
             _rectHighlighted = false;
             _canInput = true;
             _score = 0;
             _timerCountdown = 60;
+            _pixel = pixel;
 
             _timer = new Timer();
             _tweener = new Tweener();
@@ -85,6 +90,8 @@ namespace Match3Practice.src.states
 
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
         {
+
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Escape))
             {
                 _game.Exit();
@@ -111,34 +118,35 @@ namespace Match3Practice.src.states
                 if (keyboard.WasKeyJustPressed(Keys.Up))
                 {
                     _boardHighlightY = Math.Max(0, _boardHighlightY - 1);
+                    _selectSound.Play();
                 }
                 else if (keyboard.WasKeyJustPressed(Keys.Down))
                 {
                     _boardHighlightY = Math.Min(Globals.BOARD_HEIGHT - 1, _boardHighlightY + 1);
+                    _selectSound.Play();
                 }
                 else if (keyboard.WasKeyJustPressed(Keys.Left))
                 {
                     _boardHighlightX = Math.Max(0, _boardHighlightX - 1);
+                    _selectSound.Play();
                 }
                 else if (keyboard.WasKeyJustPressed(Keys.Right))
                 {
                     _boardHighlightX = Math.Min(Globals.BOARD_WIDTH - 1, _boardHighlightX + 1);
+                    _selectSound.Play();
                 }
             }
 
             if (keyboard.WasKeyJustPressed(Keys.Enter))
             {
-                _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-                _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-
                 int x = _boardHighlightX;
                 int y = _boardHighlightY;
 
                 if (_highlightedTile == null)
                 {
-                    _highlightedTile = _board.Tiles[y, x];
+                    _highlightedTile = _board.Tiles[x, y];
                 }
-                else if (_highlightedTile == _board.Tiles[y, x])
+                else if (_highlightedTile == _board.Tiles[x, y])
                 {
                     _highlightedTile = null;
                 }
@@ -153,7 +161,7 @@ namespace Match3Practice.src.states
                     int tempY = _highlightedTile.GridY;
 
                     // Swap the positions of the two tiles
-                    Tile newTile = _board.Tiles[y, x];
+                    Tile newTile = _board.Tiles[x, y];
                     
                     _highlightedTile.GridX = newTile.GridX;
                     _highlightedTile.GridY = newTile.GridY;
@@ -161,8 +169,8 @@ namespace Match3Practice.src.states
                     newTile.GridX = tempX;
                     newTile.GridY = tempY;
 
-                    _board.Tiles[_highlightedTile.GridY, _highlightedTile.GridX] = _highlightedTile;
-                    _board.Tiles[newTile.GridY, newTile.GridX] = newTile;
+                    _board.Tiles[_highlightedTile.GridX, _highlightedTile.GridY] = _highlightedTile;
+                    _board.Tiles[newTile.GridX, newTile.GridY] = newTile;
 
                     _tweener.TweenTo(target: _highlightedTile, expression: tile => tile.X, toValue: newTile.X, duration: 0.1f)
                         .Easing(EasingFunctions.Linear);
@@ -174,14 +182,57 @@ namespace Match3Practice.src.states
                         .Easing(EasingFunctions.Linear).OnEnd(_ =>
                         {
                             // Calculate matches.
+                            // HighlightedTile = null will move into the calculate matches function.
+                            _highlightedTile = null;
                         });
                 }
             }
+            _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            _timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             _board.Draw(spriteBatch);
+
+            if (_highlightedTile != null)
+            {
+
+            }
+
+            // Cursor rect
+            Color cursorColor = new Color();
+            if (_rectHighlighted)
+            {
+                cursorColor = new Color(217, 87, 99);
+            }
+            else
+            {
+                cursorColor = new Color(172, 50, 50);
+            }
+
+            // Draw the selected tile highlight
+            int lineThickness = 2;
+
+            int offsetX = _boardHighlightX * Globals.TILE_SIZE;
+            int offsetY = _boardHighlightY * Globals.TILE_SIZE;
+
+            // Top
+            spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX, _board.Y + offsetY, Globals.TILE_SIZE, lineThickness), cursorColor);
+
+            // Bottom
+            spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX, _board.Y + offsetY + Globals.TILE_SIZE - lineThickness, Globals.TILE_SIZE, lineThickness), cursorColor);
+
+            // Left 
+            spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX, _board.Y + offsetY, lineThickness, Globals.TILE_SIZE), cursorColor);
+
+            // Right
+            spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX + Globals.TILE_SIZE - lineThickness, _board.Y + offsetY, lineThickness, Globals.TILE_SIZE), cursorColor);
+        }
+
+        public void CalculateMatches()
+        {
+            throw new NotImplementedException();
         }
     }
 }

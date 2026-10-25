@@ -119,7 +119,7 @@ namespace Match3Practice
             {
                 { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
                 { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice) },
-                { "play", new PlayState(_stateMachine, soundEffects, this) },
+                { "play", new PlayState(_stateMachine, soundEffects, this, _pixel) },
                 { "game-over", new GameOverState(_stateMachine, fonts, _pixel) },
             };
 
@@ -228,22 +228,6 @@ namespace Match3Practice
             _stateMachine.Draw(_spriteBatch);
 
             //_gameBoard.Draw(_spriteBatch);
-
-            //// Draw the selected tile highlight
-            //int lineThickness = 2;
-
-            //// Top
-            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y, Globals.TILE_SIZE, lineThickness), Color.Yellow);
-
-            //// Bottom
-            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y + (int)_selectedTile.Y + Globals.TILE_SIZE, Globals.TILE_SIZE, lineThickness), Color.Yellow);
-
-            //// Left 
-            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X, _gameBoard.Y+(int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
-
-            //// Right
-            //_spriteBatch.Draw(_pixel, new Rectangle(_gameBoard.X + (int)_selectedTile.X + Globals.TILE_SIZE, _gameBoard.Y + (int)_selectedTile.Y, lineThickness, Globals.TILE_SIZE), Color.Yellow);
-
 
             // Draw graphics
             //_stateMachine.Draw(_spriteBatch);
