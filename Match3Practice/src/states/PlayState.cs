@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
@@ -37,14 +38,18 @@ namespace Match3Practice.src.states
         private SoundEffect _selectSound;
         private SoundEffect _errorSound;
 
+        // Fonts
+        private SpriteFont _mediumFont;
+
         // Game / System
         private Game _game;
 
         // Graphics
-        Texture2D _pixel;
+        private Texture2D _pixel;
 
 
-        public PlayState(StateMachine stateMachine, Dictionary<string, SoundEffect> soundEffects, Game game, Texture2D pixel) : base(stateMachine)
+        public PlayState(StateMachine stateMachine, Dictionary<string, SoundEffect> soundEffects, Game game,
+            Texture2D pixel, Dictionary<string,SpriteFont> fonts) : base(stateMachine)
         {
             _transitionAlpha = new TransitionAlpha(1f);
             _clockSound = soundEffects["clock"];
@@ -59,6 +64,7 @@ namespace Match3Practice.src.states
             _score = 0;
             _timerCountdown = 60;
             _pixel = pixel;
+            _mediumFont = fonts["medium"];
 
             _timer = new Timer();
             _tweener = new Tweener();
@@ -86,6 +92,9 @@ namespace Match3Practice.src.states
             _board = (Board)args[1];
             _score = (int)args[2];
             _scoreGoal = _level * 1.25f * 1000;
+
+            // reset timer countdown
+            _timerCountdown = 60;
         }
 
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
@@ -182,8 +191,8 @@ namespace Match3Practice.src.states
                         .Easing(EasingFunctions.Linear).OnEnd(_ =>
                         {
                             // Calculate matches.
-                            // HighlightedTile = null will move into the calculate matches function.
-                            _highlightedTile = null;
+                            CalculateMatches();
+                            
                         });
                 }
             }
@@ -197,7 +206,9 @@ namespace Match3Practice.src.states
 
             if (_highlightedTile != null)
             {
-
+                spriteBatch.Draw(_pixel, new Rectangle(_highlightedTile.GridX * Globals.TILE_SIZE + (Globals.VIRTUAL_WIDTH - 272),
+                    _highlightedTile.GridY * Globals.TILE_SIZE + 16, Globals.TILE_SIZE, Globals.TILE_SIZE),
+                    Color.White * ((float)96/255));
             }
 
             // Cursor rect
@@ -228,11 +239,38 @@ namespace Match3Practice.src.states
 
             // Right
             spriteBatch.Draw(_pixel, new Rectangle(_board.X + offsetX + Globals.TILE_SIZE - lineThickness, _board.Y + offsetY, lineThickness, Globals.TILE_SIZE), cursorColor);
+
+            Color guiColor = new Color(56, 56, 56, 234 / 255);
+
+
+            spriteBatch.Draw(_pixel, new Rectangle(16, 16, 186, 116), guiColor);
+
+        }
+
+        public override void DrawText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight)
+        {
+            string levelText = $"Level: {_level}";
+            float levelTextWidth = _mediumFont.MeasureString(levelText).X;
+
+            string scoreText = $"Score: {_score}";
+            float scoreTextWidth = _mediumFont.MeasureString(scoreText).X;
+
+            string goalText = $"Goal: {_scoreGoal}";
+            float goalTextWidth = _mediumFont.MeasureString(goalText).X;
+
+            string timerText = $"Timer: {_timerCountdown}";
+            float timerTextWidth = _mediumFont.MeasureString(timerText).X;
+
+            Color textColor = new Color(99, 155, 255);
+            spriteBatch.DrawString(_mediumFont, levelText, new Vector2((500 - levelTextWidth) / 2, 60), textColor);
+            spriteBatch.DrawString(_mediumFont, scoreText, new Vector2((500 - scoreTextWidth) / 2, 130), textColor);
+            spriteBatch.DrawString(_mediumFont, goalText, new Vector2((500 - goalTextWidth) / 2, 200), textColor);
+            spriteBatch.DrawString(_mediumFont, timerText, new Vector2((500 - timerTextWidth) / 2, 270), textColor);
         }
 
         public void CalculateMatches()
         {
-            throw new NotImplementedException();
+            _highlightedTile = null;
         }
     }
 }

@@ -119,7 +119,7 @@ namespace Match3Practice
             {
                 { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
                 { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice) },
-                { "play", new PlayState(_stateMachine, soundEffects, this, _pixel) },
+                { "play", new PlayState(_stateMachine, soundEffects, this, _pixel, fonts) },
                 { "game-over", new GameOverState(_stateMachine, fonts, _pixel) },
             };
 
@@ -223,26 +223,21 @@ namespace Match3Practice
             // Apply the transformation to the sprite batch
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
+            // Draw graphics.
             _spriteBatch.Draw(_backgroundTexture, new Vector2(_backgroundX, 0), Color.White);
 
             _stateMachine.Draw(_spriteBatch);
 
-            //_gameBoard.Draw(_spriteBatch);
-
-            // Draw graphics
-            //_stateMachine.Draw(_spriteBatch);
             _spriteBatch.End();
 
             // Draw Text.
             _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
             
             _stateMachine.DrawText(_spriteBatch, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-            //for (int i = 0; i < _intervals.Length; i++)
-            //{
-            //    _spriteBatch.DrawString(_mediumFont, $"Timer {i + 1}: {_counters[i]}", new Vector2(10, 10 + i * 40), Color.White);
-            //}
+
             _spriteBatch.End();
 
+            // Draw objects that sit in front of the text.
             _spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
 
             _stateMachine.DrawForeground(_spriteBatch);

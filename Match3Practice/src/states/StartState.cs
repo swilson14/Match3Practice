@@ -43,7 +43,7 @@ namespace Match3Practice.src.states
         {
 
             _pixel = pixel;
-            _largeFont = fonts["large"];    
+            _largeFont = fonts["large"];
             _mediumFont = fonts["medium"];
 
             _colors = new List<Color>
@@ -88,11 +88,17 @@ namespace Match3Practice.src.states
 
             // Generate board of tiles just for show.
             _showBoard = new Board((Globals.VIRTUAL_WIDTH - 8 * Globals.TILE_SIZE) / 2, (Globals.VIRTUAL_HEIGHT - 8 * Globals.TILE_SIZE) / 2,
-                8,8, sprites, _random);
+                8, 8, sprites, _random);
 
             _transitionAlpha.Alpha = 0f;
 
             _game = game;
+        }
+
+        public override void Enter(params object[] args)
+        {
+            // Reset Transition Alpha.
+            _transitionAlpha.Alpha = 0f;
         }
 
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
