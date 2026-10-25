@@ -119,6 +119,7 @@ namespace Match3Practice
             {
                 { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
                 { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice) },
+                { "play", new PlayState(_stateMachine, soundEffects, this) },
                 { "game-over", new GameOverState(_stateMachine, fonts, _pixel) },
             };
 
@@ -207,81 +208,7 @@ namespace Match3Practice
             _keyboard.Update();
             _stateMachine.Update(gameTime, _keyboard);
 
-            //int selectedTileX = _selectedTile.GridX;
-            //int selectedTileY = _selectedTile.GridY;
 
-            //if (_keyboard.WasKeyJustPressed(Keys.Up))
-            //{
-            //    if (selectedTileY > 0)
-            //    {
-            //        _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY - 1];
-            //    }
-            //}
-            //else if (_keyboard.WasKeyJustPressed(Keys.Down))
-            //{
-            //    if (selectedTileY < Globals.BOARD_HEIGHT - 1)
-            //    {
-            //        _selectedTile = _gameBoard.Tiles[selectedTileX, selectedTileY + 1];
-            //    }
-            //}
-            //else if (_keyboard.WasKeyJustPressed(Keys.Left))
-            //{
-            //    if (selectedTileX > 0)
-            //    {
-            //        _selectedTile = _gameBoard.Tiles[selectedTileX - 1, selectedTileY];
-            //    }
-            //}
-            //else if (_keyboard.WasKeyJustPressed(Keys.Right))
-            //{
-            //    if (selectedTileX < Globals.BOARD_WIDTH - 1)
-            //    {
-            //        _selectedTile = _gameBoard.Tiles[selectedTileX + 1, selectedTileY];
-            //    }
-            //}
-
-            //if (_keyboard.WasKeyJustPressed(Keys.Enter))
-            //{
-            //    if (!_highlightedTile)
-            //    {
-            //        _highlightedTile = true;
-            //        _highlightedTileX = _selectedTile.GridX;
-            //        _highlightedTileY = _selectedTile.GridY;
-            //    }
-            //    else
-            //    {
-            //        Tile tile1 = _selectedTile;
-            //        Tile tile2 = _gameBoard.Tiles[_highlightedTileX, _highlightedTileY];
-
-            //        float tempX = tile2.X;
-            //        float tempY = tile2.Y;
-            //        int tempGridX = tile2.GridX;
-            //        int tempGridY = tile2.GridY;
-
-            //        // Swap the positions of the two tiles
-            //        Tile tempTile = tile1;
-            //        _gameBoard.Tiles[tile1.GridX, tile1.GridY] = tile2;
-            //        _gameBoard.Tiles[tile2.GridX, tile2.GridY] = tempTile;
-
-            //        _tweener.TweenTo(target: tile2, expression: tile => tile.X, toValue: tile1.X, duration: 0.2f)
-            //            .Easing(EasingFunctions.Linear);
-            //        _tweener.TweenTo(target: tile2, expression: tile => tile.Y, toValue: tile1.Y, duration: 0.2f)
-            //            .Easing(EasingFunctions.Linear);
-            //        _tweener.TweenTo(target: tile1, expression: tile => tile.X, toValue: tempX, duration: 0.2f)
-            //            .Easing(EasingFunctions.Linear);
-            //        _tweener.TweenTo(target: tile1, expression: tile => tile.Y, toValue: tempY, duration: 0.2f)
-            //            .Easing(EasingFunctions.Linear);
-
-            //        tile2.GridX = tile1.GridX;
-            //        tile2.GridY = tile1.GridY;
-
-            //        tile1.GridX = tempGridX;
-            //        tile1.GridY = tempGridY;
-
-            //        _highlightedTile = false;
-            //        _selectedTile = tile2;
-            //    }
-
-            //}
 
             base.Update(gameTime);
         }

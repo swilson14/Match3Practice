@@ -19,11 +19,16 @@ namespace Match3Practice.src.states
         private int _level;
         private Board _board;
         public float LevelLabelY;
+        private int _score = 0;
+
+        private Random _random;
 
         // Graphics
         private Texture2D _pixel;
         private SpriteFont _largeFont;
         private GraphicsDevice _graphicsDevice;
+
+        private Dictionary<string, Sprite> _tileSprites;
 
 
         public BeginGameState(StateMachine stateMachine, Dictionary<string, Sprite> tileSprites,
@@ -37,11 +42,22 @@ namespace Match3Practice.src.states
             _largeFont = fonts["large"];
             _stateMachine = stateMachine;
             _graphicsDevice = graphicsDevice;
+            _random = random;
         }
 
         public override void Enter(params object[] args)
         {
             _level = (int)args[0];
+
+            if (args.Length > 1)
+            {
+                _score = (int)args[1];
+            }
+
+            if (_level > 1)
+            {
+                _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random);
+            }
 
             _tweener.TweenTo(
                 target: _transitionAlpha,
@@ -71,7 +87,7 @@ namespace Match3Practice.src.states
                     .Easing(EasingFunctions.Linear)
                     .OnEnd(_ =>
                     {
-                        _stateMachine.ChangeState("play", _level, _board);
+                        _stateMachine.ChangeState("play", _level, _board, _score);
                     });
                 });
             });
