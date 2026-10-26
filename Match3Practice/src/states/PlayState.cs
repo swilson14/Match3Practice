@@ -37,6 +37,7 @@ namespace Match3Practice.src.states
         private SoundEffect _nextLevelSound;
         private SoundEffect _selectSound;
         private SoundEffect _errorSound;
+        private SoundEffect _matchSound;
 
         // Fonts
         private SpriteFont _mediumFont;
@@ -57,6 +58,7 @@ namespace Match3Practice.src.states
             _nextLevelSound = soundEffects["next-level"];
             _errorSound = soundEffects["error"];
             _selectSound = soundEffects["select"];
+            _matchSound = soundEffects["match"];
             _boardHighlightX = 0;
             _boardHighlightY = 0;
             _rectHighlighted = false;
@@ -269,6 +271,19 @@ namespace Match3Practice.src.states
         public void CalculateMatches()
         {
             _highlightedTile = null;
+
+            List<Match> matches = _board.CalculateMatches();
+
+            if (matches != null)
+            {
+                _matchSound.Play();
+
+                foreach (Match match in matches)
+                {
+                    _score += match.matchValue * 50;
+                }
+            }
+
         }
     }
 }

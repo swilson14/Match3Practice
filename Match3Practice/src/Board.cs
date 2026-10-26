@@ -40,6 +40,12 @@ namespace Match3Practice.src
             }
         }
 
+        public List<Match> CalculateMatches()
+        {
+            
+        }
+
+
         public void Draw(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < Width; i++)

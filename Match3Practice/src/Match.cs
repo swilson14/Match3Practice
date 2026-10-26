@@ -9,5 +9,7 @@ namespace Match3Practice.src
     public class Match
     {
         public List<Tile> Tiles { get; set; }
+
+        public int MatchValue { get; set; }
     }
 }
