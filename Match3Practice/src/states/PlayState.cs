@@ -280,7 +280,7 @@ namespace Match3Practice.src.states
 
                 foreach (Match match in matches)
                 {
-                    _score += match.matchValue * 50;
+                    _score += match.MatchValue * 50;
                 }
             }
 
