@@ -282,6 +282,14 @@ namespace Match3Practice.src.states
                 {
                     _score += match.MatchValue * 50;
                 }
+
+                _board.RemoveMatches();
+
+                // Dictionary of Tiles + Tween Destinations
+                Dictionary<Tile, int> tilesToFall = _board.GetFallingTiles();
+
+                // Tween tiles to fall.
+
             }
 
         }

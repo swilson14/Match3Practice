@@ -42,6 +42,16 @@ namespace Match3Practice.src
 
         public List<Match> CalculateMatches()
         {
+
+        }
+
+        public void RemoveMatches()
+        {
+
+        }
+
+        public Dictionary<Tile, int> GetFallingTiles()
+        {
             
         }
 
@@ -56,8 +66,5 @@ namespace Match3Practice.src
                 }
             }
         }
-
-
-
     }
 }
