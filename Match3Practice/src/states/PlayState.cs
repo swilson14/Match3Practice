@@ -271,6 +271,7 @@ namespace Match3Practice.src.states
         public void CalculateMatches()
         {
             _highlightedTile = null;
+            _canInput = false;
 
             List<Match> matches = _board.CalculateMatches();
 
@@ -289,7 +290,19 @@ namespace Match3Practice.src.states
                 Dictionary<Tile, int> tilesToFall = _board.GetFallingTiles();
 
                 // Tween tiles to fall.
+                foreach (Tile tile in tilesToFall.Keys)
+                {
+                    int destY = tilesToFall[tile];
 
+                    _tweener.TweenTo(tile, t => t.Y, destY, 0.25f).OnEnd(_ =>
+                        // recursively call, in case there are more matches
+                        CalculateMatches()
+                    );
+                }
+            }
+            else
+            {
+                _canInput = true;
             }
 
         }

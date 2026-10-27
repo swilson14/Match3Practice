@@ -195,8 +195,6 @@ namespace Match3Practice
         }
         protected override void Update(GameTime gameTime)
         {
-            //_tweener.Update(gameTime.GetElapsedSeconds());
-            //_timer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             _backgroundX = _backgroundX - BACKGROUND_SCROLL * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -207,8 +205,6 @@ namespace Match3Practice
 
             _keyboard.Update();
             _stateMachine.Update(gameTime, _keyboard);
-
-
 
             base.Update(gameTime);
         }
