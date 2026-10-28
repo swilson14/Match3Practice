@@ -20,6 +20,8 @@ namespace Match3Practice.src
         public Tile[,] Tiles;
         private Random _random = new Random();
 
+        private Dictionary<string, Sprite> _tileSprites;
+
         public List<Match> Matches { get; set; } = new List<Match>();
 
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random)
@@ -38,6 +40,8 @@ namespace Match3Practice.src
                     Tiles[i, j] = new Tile(i, j, color, variety, tileSprites);
                 }
             }
+            _tileSprites = tileSprites;
+
         }
 
         public List<Match> CalculateMatches()
@@ -174,7 +178,64 @@ namespace Match3Practice.src
 
         public Dictionary<Tile, int> GetFallingTiles()
         {
-            
+            Dictionary<Tile, int> results = new Dictionary<Tile, int>();
+
+            for (int x = 0; x < Width; x++)
+            {
+                bool space = false;
+                int spaceY = 0;
+
+                int y = Height;
+                while (y > 1)
+                {
+                    Tile currentTile = Tiles[x, y];
+
+                    if (space)
+                    {
+                        if (currentTile != null)
+                        {
+                            Tiles[x, spaceY] = currentTile;
+                            currentTile.GridY = spaceY;
+
+                            Tiles[x, y] = null;
+
+                            results.Add(currentTile, currentTile.GridY * Globals.TILE_SIZE);
+
+                            space = false;
+                            y = spaceY;
+                            spaceY = 0;
+                        }
+                    }
+                    else if (currentTile == null)
+                    {
+                        space = true;
+
+                        if (spaceY == 0)
+                        {
+                            spaceY = y;
+                        }
+                    }
+                    y--;
+                }
+            }
+            // Replace tiles
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = Height-1; y > 0; y--)
+                {
+                    Tile currentTile = Tiles[x, y];
+
+                    if (currentTile == null)
+                    {
+                        Tile newTile = new Tile(x, y, _random.Next(18), _random.Next(6), _tileSprites);
+                        newTile.Y = -32;
+                        Tiles[x, y] = newTile;
+
+                        results.Add(currentTile, currentTile.GridY * Globals.TILE_SIZE);
+                    }
+                }
+            }
+            return results;
         }
 
 
