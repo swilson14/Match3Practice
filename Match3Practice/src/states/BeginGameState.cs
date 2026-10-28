@@ -34,8 +34,9 @@ namespace Match3Practice.src.states
         public BeginGameState(StateMachine stateMachine, Dictionary<string, Sprite> tileSprites,
             Random random, Texture2D pixel, Dictionary<string, SpriteFont> fonts, GraphicsDevice graphicsDevice) : base(stateMachine)
         {
+            _tileSprites = tileSprites;
             _transitionAlpha = new TransitionAlpha(1f);
-            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, tileSprites, random);
+            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, random);
             LevelLabelY = -160;
             _tweener = new Tweener();
             _pixel = pixel;

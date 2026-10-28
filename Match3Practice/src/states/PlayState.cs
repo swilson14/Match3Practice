@@ -70,21 +70,6 @@ namespace Match3Practice.src.states
 
             _timer = new Timer();
             _tweener = new Tweener();
-
-            _timer.Every(0.5f, () =>
-            {
-                // Toggle the highlighted tile on and off every half second
-                _rectHighlighted = !_rectHighlighted;
-            });
-
-            _timer.Every(1f, () =>
-            {
-                _timerCountdown--;
-                if (_timerCountdown <= 5)
-                {
-                    _clockSound.Play();
-                }
-            });
             _game = game;
         }
 
@@ -97,6 +82,23 @@ namespace Match3Practice.src.states
 
             // reset timer countdown
             _timerCountdown = 60;
+
+            // Countdown
+            _timer.Every(1f, () =>
+            {
+                _timerCountdown--;
+                if (_timerCountdown <= 5)
+                {
+                    _clockSound.Play();
+                }
+            });
+
+            _timer.Every(0.5f, () =>
+            {
+                // Toggle the highlighted tile on and off every half second
+                _rectHighlighted = !_rectHighlighted;
+            });
+
         }
 
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
@@ -275,13 +277,14 @@ namespace Match3Practice.src.states
 
             List<Match> matches = _board.CalculateMatches();
 
+            
             if (matches != null)
             {
                 _matchSound.Play();
 
                 foreach (Match match in matches)
                 {
-                    _score += match.MatchValue * 50;
+                    _score += match.Tiles.Count * 50;
                 }
 
                 _board.RemoveMatches();

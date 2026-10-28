@@ -8,6 +8,11 @@ namespace Match3Practice.src
 {
     public class Match
     {
+        public Match()
+        {
+            Tiles = new List<Tile>();
+        }
+
         public List<Tile> Tiles { get; set; }
 
         public int MatchValue { get; set; }

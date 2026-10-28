@@ -18,7 +18,7 @@ namespace Match3Practice.src
         public int Width;
         public int Height;
         public Tile[,] Tiles;
-        private Random _random = new Random();
+        private Random _random;
 
         private Dictionary<string, Sprite> _tileSprites;
 
@@ -31,17 +31,17 @@ namespace Match3Practice.src
             Width = width;
             Height = height;
             Tiles = new Tile[width, height];
+            _tileSprites = tileSprites;
+            _random = random;
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
                     int color = _random.Next(0, 18); // Assuming 18 colors
                     int variety = _random.Next(0, 6); // Assuming 6 varieties per color
-                    Tiles[i, j] = new Tile(i, j, color, variety, tileSprites);
+                    Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites);
                 }
-            }
-            _tileSprites = tileSprites;
-
+            }          
         }
 
         public List<Match> CalculateMatches()
@@ -53,14 +53,14 @@ namespace Match3Practice.src
             // Horizontal matches first.
             for (int y = 0; y < Height; y++)
             {
-                int colorToMatch = Tiles[1, y].TileColor;
+                int colorToMatch = Tiles[0, y].TileColor;
                 matchNum = 1;
 
                 for (int x = 1; x < Width; x++)
                 {
                     if (Tiles[x, y].TileColor == colorToMatch)
                     {
-                        matchNum = matchNum++;
+                        matchNum++;
                     }
                     else
                     {
@@ -71,7 +71,7 @@ namespace Match3Practice.src
                             Match match = new Match();
 
                             // Go backwards from here by matchNum
-                            for (int x2 = x - 1; x2 < x - matchNum; x2--)
+                            for (int x2 = x-1; x2 > x-1 - matchNum; x2--)
                             {
                                 match.Tiles.Add(Tiles[x2, y]);
                             }
@@ -92,8 +92,8 @@ namespace Match3Practice.src
                     Match match = new Match();
 
                     // Work backwards
-                    for (int x = Width; x < Width - matchNum; x--)
-                    {
+                    for (int x = Width-1; x > Width-1 - matchNum; x--)
+                    {                    
                         match.Tiles.Add(Tiles[x, y]);
                     }
 
@@ -103,14 +103,14 @@ namespace Match3Practice.src
 
             // Vertical Matches
             for (int x = 0; x < Width; x++)
-            {
-                int colorToMatch = Tiles[x, 1].TileColor;
+            {                
+                int colorToMatch = Tiles[x, 0].TileColor;
 
                 matchNum = 1;
 
                 for (int y = 1; y < Height; y++)
                 {
-                    if (Tiles[y, x].TileColor == colorToMatch)
+                    if (Tiles[x, y].TileColor == colorToMatch)
                     {
                         matchNum++;
                     }
@@ -118,11 +118,11 @@ namespace Match3Practice.src
                     {
                         colorToMatch = Tiles[x, y].TileColor;
 
-                        if (matchNum > 3)
+                        if (matchNum >= 3)
                         {
                             Match match = new Match();
 
-                            for (int y2 = y - 1; y < y - matchNum; y--)
+                            for (int y2 = y-1; y2 > y-1 - matchNum; y2--)
                             {
                                 match.Tiles.Add(Tiles[x, y2]);
                             }
@@ -144,7 +144,7 @@ namespace Match3Practice.src
                     Match match = new Match();
 
                     // Work backwards
-                    for (int y = Height; y < Height - matchNum; y--)
+                    for (int y = Height-1; y > Height-1 - matchNum; y--)
                     {
                         match.Tiles.Add(Tiles[x, y]);
                     }
@@ -170,8 +170,8 @@ namespace Match3Practice.src
             foreach(Match match in Matches)
             {
                 for (int i = 0; i < match.Tiles.Count; i++)
-                {
-                    Tiles[match.Tiles[i].GridX, match.Tiles[i].GridX] = null;
+                {                  
+                    Tiles[match.Tiles[i].GridX, match.Tiles[i].GridY] = null;
                 }
             }
         }
@@ -185,8 +185,8 @@ namespace Match3Practice.src
                 bool space = false;
                 int spaceY = 0;
 
-                int y = Height;
-                while (y > 1)
+                int y = Height-1;
+                while (y >= 0)
                 {
                     Tile currentTile = Tiles[x, y];
 
@@ -221,7 +221,7 @@ namespace Match3Practice.src
             // Replace tiles
             for (int x = 0; x < Width; x++)
             {
-                for (int y = Height-1; y > 0; y--)
+                for (int y = Height-1; y >= 0; y--)
                 {
                     Tile currentTile = Tiles[x, y];
 
@@ -231,7 +231,7 @@ namespace Match3Practice.src
                         newTile.Y = -32;
                         Tiles[x, y] = newTile;
 
-                        results.Add(currentTile, currentTile.GridY * Globals.TILE_SIZE);
+                        results.Add(newTile, newTile.GridY * Globals.TILE_SIZE);
                     }
                 }
             }
