@@ -88,7 +88,7 @@ namespace Match3Practice.src.states
 
             // Generate board of tiles just for show.
             _showBoard = new Board((Globals.VIRTUAL_WIDTH - 8 * Globals.TILE_SIZE) / 2, (Globals.VIRTUAL_HEIGHT - 8 * Globals.TILE_SIZE) / 2,
-                8, 8, sprites, _random);
+                8, 8, sprites, _random, 7);
 
             _transitionAlpha.Alpha = 0f;
 

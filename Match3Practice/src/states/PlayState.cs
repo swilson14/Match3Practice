@@ -276,15 +276,19 @@ namespace Match3Practice.src.states
             _canInput = false;
 
             List<Match> matches = _board.CalculateMatches();
-
-            
+         
             if (matches != null)
             {
                 _matchSound.Play();
 
                 foreach (Match match in matches)
                 {
-                    _score += match.Tiles.Count * 50;
+                    foreach(Tile tile in match.Tiles)
+                    {
+                        _score += 25 * tile.Variety + 50;
+                    }
+
+                    _timerCountdown += match.Tiles.Count;
                 }
 
                 _board.RemoveMatches();

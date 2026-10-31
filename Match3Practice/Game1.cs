@@ -139,8 +139,6 @@ namespace Match3Practice
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
-            _gameBoard = new Board(Globals.VIRTUAL_WIDTH-(Globals.TILE_SIZE*Globals.BOARD_WIDTH), 
-                Globals.TILE_SIZE+16,Globals.BOARD_WIDTH, Globals.BOARD_HEIGHT, _tileSprites, _random);
 
             // Audio
             _clockSound = Content.Load<SoundEffect>("sounds/clock");

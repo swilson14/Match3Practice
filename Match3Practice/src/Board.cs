@@ -24,7 +24,7 @@ namespace Match3Practice.src
 
         public List<Match> Matches { get; set; } = new List<Match>();
 
-        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random)
+        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level)
         {
             X = x;
             Y = y;
@@ -39,6 +39,12 @@ namespace Match3Practice.src
                 {
                     int color = _random.Next(0, 18); // Assuming 18 colors
                     int variety = _random.Next(0, 6); // Assuming 6 varieties per color
+                    
+                    if (variety >= level)
+                    {
+                        variety = level;
+                    }
+
                     Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites);
                 }
             }          
