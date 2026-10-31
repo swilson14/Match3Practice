@@ -36,7 +36,6 @@ namespace Match3Practice.src.states
         {
             _tileSprites = tileSprites;
             _transitionAlpha = new TransitionAlpha(1f);
-            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, random, _level);
             LevelLabelY = -160;
             _tweener = new Tweener();
             _pixel = pixel;
@@ -55,10 +54,7 @@ namespace Match3Practice.src.states
                 _score = (int)args[1];
             }
 
-            if (_level > 1)
-            {
-                _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random, _level);
-            }
+            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random, _level);            
 
             _tweener.TweenTo(
                 target: _transitionAlpha,

@@ -24,6 +24,8 @@ namespace Match3Practice.src
 
         public List<Match> Matches { get; set; } = new List<Match>();
 
+        private int _level;
+
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level)
         {
             X = x;
@@ -33,16 +35,18 @@ namespace Match3Practice.src
             Tiles = new Tile[width, height];
             _tileSprites = tileSprites;
             _random = random;
+            _level = level;
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    int color = _random.Next(0, 18); // Assuming 18 colors
-                    int variety = _random.Next(0, 6); // Assuming 6 varieties per color
+                    int color = _random.Next(18); // Assuming 18 colors
+                    int variety = _random.Next(6); // Assuming 6 varieties per color
                     
-                    if (variety >= level)
+                    if (variety >= _level)
                     {
-                        variety = level;
+                        // level 1 only has basic blocks, with more patterns added per level.
+                        variety = _level - 1;
                     }
 
                     Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites);
@@ -233,7 +237,17 @@ namespace Match3Practice.src
 
                     if (currentTile == null)
                     {
-                        Tile newTile = new Tile(x, y, _random.Next(18), _random.Next(6), _tileSprites);
+
+                        int color = _random.Next(18);
+                        int variety = _random.Next(6);
+
+                        if (variety >= _level)
+                        {
+                            // level 1 only has basic blocks, with more patterns added per level.
+                            variety = _level - 1;
+                        }
+
+                        Tile newTile = new Tile(x, y, color, variety, _tileSprites);
                         newTile.Y = -32;
                         Tiles[x, y] = newTile;
 
