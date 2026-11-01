@@ -101,8 +101,6 @@ namespace Match3Practice
             _keyboard = new KeyboardInfo();
             _stateMachine = new StateMachine();
 
-
-
             // populate sound effects dictionary
             Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>
             {
@@ -125,8 +123,8 @@ namespace Match3Practice
 
             _stateMachine.States = new Dictionary<string, State>
             {
-                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this, _sparkleEffect) },
-                { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice, _sparkleEffect) },
+                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this, _sparkleEffect, _explosionEffect) },
+                { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice, _sparkleEffect, _explosionEffect) },
                 { "play", new PlayState(_stateMachine, soundEffects, this, _pixel, fonts) },
                 { "game-over", new GameOverState(_stateMachine, fonts, _pixel) },
             };
@@ -175,7 +173,75 @@ namespace Match3Practice
         private void CreateParticleEffects()
         {
             CreateSparkleEffect();
+            CreateExplosionEffect();
+        }
 
+        private void CreateExplosionEffect()
+        {
+            Vector2 viewportCenter = GraphicsDevice.Viewport.Bounds.Center.ToVector2();
+
+            _explosionEffect = new ParticleEffect("Explosion")
+            {
+                Position = Vector2.One,
+
+                // Disable auto trigger - we'll trigger manually
+                AutoTrigger = false,
+            };
+
+            ParticleEmitter emitter = new ParticleEmitter(2000)
+            {
+                Name = "Explosion Emitter",
+                LifeSpan = 1.5f,
+                TextureRegion = new MonoGame.Extended.Graphics.Texture2DRegion(_pixel),
+
+                // Change the profile to make particles explode outward
+                Profile = Profile.Line(Vector2.UnitX, 8.0f * Globals.TILE_SIZE, LineRadiation.None),
+
+                Parameters = new ParticleReleaseParameters
+                {
+                    Quantity = new ParticleInt32Parameter(150, 200),
+
+                    // Increase random speed to 100-200
+                    Speed = new ParticleFloatParameter(60f, 100f),
+
+                    Color = new ParticleColorParameter(new Vector3(0.0f, 1.0f, 0.6f)),
+                    Scale = new ParticleVector2Parameter(new Vector2(3.0f, 5.0f))
+                }
+            };
+
+            emitter.Modifiers.Add(new LinearGravityModifier
+            {
+                // Change gravity to move down
+                Direction = Vector2.UnitY,
+
+                Strength = 20f
+            });
+
+            emitter.Modifiers.Add(new AgeModifier
+            {
+                Interpolators =
+        {
+            new OpacityInterpolator
+            {
+                StartValue = 1.0f,
+                EndValue = 0.0f
+            },
+            new ScaleInterpolator
+            {
+                StartValue = new Vector2(3.0f, 5.0f),
+                EndValue = new Vector2(1.0f, 0.0f)
+            }
+        }
+            });
+
+            // Add drag modifier for air resistance
+            emitter.Modifiers.Add(new DragModifier
+            {
+                Density = 1.0f,
+                DragCoefficient = 1.0f
+            });
+
+            _explosionEffect.Emitters.Add(emitter);
         }
 
         private void CreateSparkleEffect()
@@ -286,6 +352,7 @@ namespace Match3Practice
             _keyboard.Update();
             _stateMachine.Update(gameTime, _keyboard);
             _sparkleEffect.Update(gameTime);
+            _explosionEffect.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -306,6 +373,8 @@ namespace Match3Practice
             _stateMachine.Draw(_spriteBatch);
 
             _spriteBatch.Draw(_sparkleEffect);
+
+            _spriteBatch.Draw(_explosionEffect);
 
             _spriteBatch.End();
 

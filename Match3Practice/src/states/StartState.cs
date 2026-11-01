@@ -35,6 +35,7 @@ namespace Match3Practice.src.states
         // Graphics
         private Texture2D _pixel;
         private ParticleEffect _sparkleEffect;
+        private ParticleEffect _explosionEffect;
 
         //Fonts
         private SpriteFont _smallFont;
@@ -46,11 +47,12 @@ namespace Match3Practice.src.states
 
         public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,
             Dictionary<string, SoundEffect> soundEffects, Tweener tweener, Texture2D pixel,
-            Dictionary<string, SpriteFont> fonts, Game game, ParticleEffect sparkleEffect) : base(stateMachine)
+            Dictionary<string, SpriteFont> fonts, Game game, ParticleEffect sparkleEffect, ParticleEffect explosionEffect) : base(stateMachine)
         {
 
             _pixel = pixel;
             _sparkleEffect = sparkleEffect;
+            _explosionEffect = explosionEffect;
             _largeFont = fonts["large"];
             _mediumFont = fonts["medium"];
 
@@ -96,7 +98,7 @@ namespace Match3Practice.src.states
 
             // Generate board of tiles just for show.
             _showBoard = new Board((Globals.VIRTUAL_WIDTH - 8 * Globals.TILE_SIZE) / 2, (Globals.VIRTUAL_HEIGHT - 8 * Globals.TILE_SIZE) / 2,
-                8, 8, sprites, _random, 7, _sparkleEffect);
+                8, 8, sprites, _random, 7, _sparkleEffect, _explosionEffect);
 
             _transitionAlpha.Alpha = 0f;
 

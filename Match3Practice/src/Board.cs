@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using MonoGame.Extended.Particles;
+using Microsoft.Xna.Framework;
 
 namespace Match3Practice.src
 {
@@ -27,8 +28,10 @@ namespace Match3Practice.src
 
         private int _level;
         private ParticleEffect _sparkleEffect;
+        private ParticleEffect _explosionEffect;
 
-        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level, ParticleEffect sparkleEffect)
+        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level,
+            ParticleEffect sparkleEffect, ParticleEffect explosionEffect)
         {
             X = x;
             Y = y;
@@ -39,6 +42,7 @@ namespace Match3Practice.src
             _random = random;
             _level = level;
             _sparkleEffect = sparkleEffect;
+            _explosionEffect = explosionEffect;
 
             InitializeTiles(Width, Height);
         }
@@ -204,7 +208,12 @@ namespace Match3Practice.src
                 {
 
                     Tile currentTile = Tiles[match.Tiles[i].GridX, match.Tiles[i].GridY];
-                    if (currentTile == null) continue;
+
+                    if (currentTile == null)
+                    {
+                        continue;
+                    }
+
                     if (currentTile.IsShiny)
                     {
                         // Destroy all tiles in the same row and trigger a particle effect.
@@ -212,6 +221,8 @@ namespace Match3Practice.src
                         {
                             Tiles[x, currentTile.GridY] = null;
                         }
+                        _explosionEffect.Position = new Vector2(X + Globals.TILE_SIZE*4, Y + currentTile.Y);
+                        _explosionEffect.Trigger();
                     }
                     else
                     {
