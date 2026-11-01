@@ -39,13 +39,19 @@ namespace Match3Practice.src
             _random = random;
             _level = level;
             _sparkleEffect = sparkleEffect;
+
+            InitializeTiles(Width, Height);
+        }
+
+        private void InitializeTiles(int width, int height)
+        {
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
                     int color = _random.Next(18); // Assuming 18 colors
                     int variety = _random.Next(6); // Assuming 6 varieties per color
-                    
+
                     if (variety >= _level)
                     {
                         // level 1 only has basic blocks, with more patterns added per level.
@@ -61,7 +67,12 @@ namespace Match3Practice.src
 
                     Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites, _sparkleEffect, X, Y, isShiny);
                 }
-            }          
+            }
+
+            while (CalculateMatches() != null)
+            {
+                InitializeTiles(width, height);
+            }
         }
 
         public List<Match> CalculateMatches()
@@ -190,8 +201,22 @@ namespace Match3Practice.src
             foreach(Match match in Matches)
             {
                 for (int i = 0; i < match.Tiles.Count; i++)
-                {                  
-                    Tiles[match.Tiles[i].GridX, match.Tiles[i].GridY] = null;
+                {
+
+                    Tile currentTile = Tiles[match.Tiles[i].GridX, match.Tiles[i].GridY];
+                    if (currentTile == null) continue;
+                    if (currentTile.IsShiny)
+                    {
+                        // Destroy all tiles in the same row and trigger a particle effect.
+                        for (int x = 0; x < Width; x++)
+                        {
+                            Tiles[x, currentTile.GridY] = null;
+                        }
+                    }
+                    else
+                    {
+                        Tiles[match.Tiles[i].GridX, match.Tiles[i].GridY] = null;
+                    }
                 }
             }
         }
@@ -291,6 +316,20 @@ namespace Match3Practice.src
                 }
             }
             return shinyTiles;
+        }
+
+        public void Update(float deltaTime)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    if (Tiles[i, j] != null)
+                    {
+                        Tiles[i, j].Update(deltaTime);
+                    }
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)

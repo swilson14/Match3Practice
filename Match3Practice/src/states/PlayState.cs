@@ -104,7 +104,7 @@ namespace Match3Practice.src.states
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
         {
 
-
+            _board.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Escape))
             {
                 _game.Exit();
@@ -286,6 +286,22 @@ namespace Match3Practice.src.states
                     foreach(Tile tile in match.Tiles)
                     {
                         _score += 25 * tile.Variety + 50;
+                        // Add bonus points for shiny tiles
+                        if (tile.IsShiny)
+                        {
+                            // Calculate the points for the entire row.
+                            int rowPoints = 0;
+                            for (int x = 0; x < _board.Width; x++)
+                            {
+                                Tile rowTile = _board.Tiles[x, tile.GridY];
+                                if (rowTile != null)
+                                {
+                                    rowPoints += 25 * rowTile.Variety + 50;
+                                }
+                            }
+                            _score += rowPoints;
+                        }
+
                     }
 
                     _timerCountdown += match.Tiles.Count;

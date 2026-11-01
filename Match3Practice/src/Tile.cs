@@ -52,6 +52,14 @@ namespace Match3Practice.src
             }
         }
 
+        public void Update(float deltaTime)
+        {
+            if (IsShiny)
+            {
+                _sparkleEffect.Position = new Vector2(_boardX + X + Globals.TILE_SIZE / 2, _boardY + Y + Globals.TILE_SIZE / 2);
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
