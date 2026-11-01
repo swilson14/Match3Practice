@@ -1,6 +1,7 @@
 ﻿using Match3Practice.Input;
 using Match3Practice.src;
 using Match3Practice.src.graphics;
+using Match3Practice.src.states;
 using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -8,11 +9,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
-using System.Collections.Generic;
-using System;
+using MonoGame.Extended.Particles;
+using MonoGame.Extended.Particles.Data;
+using MonoGame.Extended.Particles.Modifiers;
+using MonoGame.Extended.Particles.Modifiers.Interpolators;
+using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.Tweening;
-using Match3Practice.src.states;
+using MonoGame.Extended.ViewportAdapters;
+using System;
+using System.Collections.Generic;
 
 namespace Match3Practice
 {
@@ -33,6 +38,9 @@ namespace Match3Practice
         private Texture2D _pixel;
         private TextureAtlas _tileAtlas;
         private Dictionary<string, Sprite> _tileSprites = new Dictionary<string, Sprite>();
+        private Texture2D _particle;
+        private ParticleEffect _sparkleEffect;
+        private ParticleEffect _explosionEffect;
 
         // Fonts
         private SpriteFont _smallFont;
@@ -48,9 +56,9 @@ namespace Match3Practice
         private SoundEffect _selectSound;
 
 
-        private Song Music1;
-        private Song Music2;
-        private Song Music3;
+        private Song _music1;
+        private Song _music2;
+        private Song _music3;
 
         
 
@@ -117,11 +125,14 @@ namespace Match3Practice
 
             _stateMachine.States = new Dictionary<string, State>
             {
-                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this) },
-                { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice) },
+                { "start", new StartState(_stateMachine, _tileSprites, _random, soundEffects, _tweener, _pixel, fonts, this, _sparkleEffect) },
+                { "begin-game", new BeginGameState(_stateMachine, _tileSprites, _random, _pixel, fonts, GraphicsDevice, _sparkleEffect) },
                 { "play", new PlayState(_stateMachine, soundEffects, this, _pixel, fonts) },
                 { "game-over", new GameOverState(_stateMachine, fonts, _pixel) },
             };
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(_music1);
 
             _stateMachine.ChangeState("start");
         }
@@ -136,6 +147,9 @@ namespace Match3Practice
             _tileAtlas = new TextureAtlas(_tilesTexture);
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new Color[] { Color.White });
+            _particle = Content.Load<Texture2D>("graphics/particle");
+
+            CreateParticleEffects();
 
             // Populate list of tile sprites from the texture atlas.
             PopulateTileSprites();
@@ -147,15 +161,83 @@ namespace Match3Practice
             _matchSound = Content.Load<SoundEffect>("sounds/match");
             _nextLevelSound = Content.Load<SoundEffect>("sounds/next-level");
             _selectSound = Content.Load<SoundEffect>("sounds/select");
-            Music1 = Content.Load<Song>("sounds/music");
-            Music2 = Content.Load<Song>("sounds/music2");
-            Music3 = Content.Load<Song>("sounds/music3");
+            _music1 = Content.Load<Song>("sounds/music");
+            _music2 = Content.Load<Song>("sounds/music2");
+            _music3 = Content.Load<Song>("sounds/music3");
 
             // Fonts
             _smallFont = Content.Load<SpriteFont>("fonts/small");
             _mediumFont = Content.Load<SpriteFont>("fonts/medium");
             _largeFont = Content.Load<SpriteFont>("fonts/large");
 
+        }
+
+        private void CreateParticleEffects()
+        {
+            CreateSparkleEffect();
+
+        }
+
+        private void CreateSparkleEffect()
+        {
+            Vector2 viewportCenter = GraphicsDevice.Viewport.Bounds.Center.ToVector2();
+
+            _sparkleEffect = new ParticleEffect("sparkle")
+            {
+                Position = viewportCenter,
+
+                // Disable auto trigger - we'll trigger manually
+                AutoTrigger = false,
+
+                AutoTriggerFrequency = 0.1f
+            };
+
+            ParticleEmitter emitter = new ParticleEmitter(2000)
+            {
+                Name = "Sparkle Emitter",
+
+                // Each particle created by this emitter lives for 0.5 seconds
+                LifeSpan = 0.2f,
+                TextureRegion = new MonoGame.Extended.Graphics.Texture2DRegion(_pixel),
+
+                // Expand the radius of the circle profile to 200
+                Profile = Profile.Circle(10, CircleRadiation.Out),
+
+                Parameters = new ParticleReleaseParameters
+                {
+                    Quantity = new ParticleInt32Parameter(10, 20),
+
+                    // Decrease random speed to 10-40
+                    Speed = new ParticleFloatParameter(10.0f, 40.0f),
+
+                    Color = new ParticleColorParameter(
+                        new Vector3(252.0f, 1.0f, 0.8f),
+                        new Vector3(180.0f, 1.0f, 0.5f)),
+
+                    // Scale
+                    Scale = new ParticleVector2Parameter(new Vector2(2.0f, 2.0f))
+                }
+            };
+
+            // Remove the Linear Gravity Modifier for floating effect
+            emitter.Modifiers.Add(new AgeModifier
+            {
+                Interpolators =
+        {
+            // Change to Hue interpolator to cycle the hue over time to give the
+            // shimmering effect.
+            new HueInterpolator
+            {
+                // Start at red (Hue=0°)
+                StartValue = 0.0f,
+
+                // Cycle through all colors (Hue=360°)
+                EndValue = 360.0f
+            }
+        }
+            });
+
+            _sparkleEffect.Emitters.Add(emitter);
         }
 
         private void PopulateTileSprites()
@@ -203,6 +285,7 @@ namespace Match3Practice
 
             _keyboard.Update();
             _stateMachine.Update(gameTime, _keyboard);
+            _sparkleEffect.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -222,11 +305,13 @@ namespace Match3Practice
 
             _stateMachine.Draw(_spriteBatch);
 
+            _spriteBatch.Draw(_sparkleEffect);
+
             _spriteBatch.End();
 
             // Draw Text.
             _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
-            
+                 
             _stateMachine.DrawText(_spriteBatch, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             _spriteBatch.End();

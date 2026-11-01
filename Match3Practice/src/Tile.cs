@@ -1,6 +1,8 @@
 ﻿using Match3Practice.src.graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Particles;
+using MonoGame.Extended.Particles.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +20,17 @@ namespace Match3Practice.src
         public int TileColor { get; set; }
         public int Variety { get; set; }
 
-        private Dictionary<string, Sprite> _tileSprites;
+        public bool IsShiny { get; set; } = false;
 
-        public Tile(int x, int y, int color, int variety, Dictionary<string, Sprite> tileSprites)
+        private Dictionary<string, Sprite> _tileSprites;
+        private ParticleEffect _sparkleEffect;
+
+        private int _boardX;
+        private int _boardY;
+
+
+        public Tile(int x, int y, int color, int variety, Dictionary<string, Sprite> tileSprites, ParticleEffect sparkleEffect,
+            int boardX, int boardY,bool isShiny = false)
         {
             GridX = x;
             GridY = y;
@@ -29,9 +39,20 @@ namespace Match3Practice.src
             TileColor = color;
             Variety = variety;
             _tileSprites = tileSprites;
+            _sparkleEffect = sparkleEffect;
+            IsShiny = isShiny;
+
+            _boardX = boardX;
+            _boardY = boardY;
+
+            if (isShiny)
+            {
+                _sparkleEffect.AutoTrigger = true;
+                _sparkleEffect.Position = new Vector2(_boardX+X+Globals.TILE_SIZE/2, _boardY+Y+Globals.TILE_SIZE/2);
+            }
         }
 
-        public void Draw(SpriteBatch spriteBatch, int boardX, int boardY)
+        public void Draw(SpriteBatch spriteBatch)
         {
             var tileSprite = _tileSprites[$"tile-{TileColor}-{Variety}"];
 
@@ -39,7 +60,7 @@ namespace Match3Practice.src
             //tileSprite.Color = Color.White * 0.3f; 
 
             // Draw the tile
-            tileSprite.Draw(spriteBatch, new Vector2(boardX + X, boardY + Y));
+            tileSprite.Draw(spriteBatch, new Vector2(_boardX + X, _boardY + Y));
         }
     }
 }

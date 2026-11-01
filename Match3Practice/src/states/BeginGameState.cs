@@ -2,6 +2,7 @@
 using Match3Practice.src.graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Particles;
 using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,11 @@ namespace Match3Practice.src.states
 
         private Dictionary<string, Sprite> _tileSprites;
 
+        private ParticleEffect _sparkleEffect;
+
 
         public BeginGameState(StateMachine stateMachine, Dictionary<string, Sprite> tileSprites,
-            Random random, Texture2D pixel, Dictionary<string, SpriteFont> fonts, GraphicsDevice graphicsDevice) : base(stateMachine)
+            Random random, Texture2D pixel, Dictionary<string, SpriteFont> fonts, GraphicsDevice graphicsDevice, ParticleEffect sparkleEffect) : base(stateMachine)
         {
             _tileSprites = tileSprites;
             _transitionAlpha = new TransitionAlpha(1f);
@@ -43,6 +46,7 @@ namespace Match3Practice.src.states
             _stateMachine = stateMachine;
             _graphicsDevice = graphicsDevice;
             _random = random;
+            _sparkleEffect = sparkleEffect;
         }
 
         public override void Enter(params object[] args)
@@ -54,7 +58,7 @@ namespace Match3Practice.src.states
                 _score = (int)args[1];
             }
 
-            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random, _level);            
+            _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random, _level, _sparkleEffect);            
 
             _tweener.TweenTo(
                 target: _transitionAlpha,

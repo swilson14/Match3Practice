@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using MonoGame.Extended.Particles;
 
 namespace Match3Practice.src
 {
@@ -25,8 +26,9 @@ namespace Match3Practice.src
         public List<Match> Matches { get; set; } = new List<Match>();
 
         private int _level;
+        private ParticleEffect _sparkleEffect;
 
-        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level)
+        public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level, ParticleEffect sparkleEffect)
         {
             X = x;
             Y = y;
@@ -36,6 +38,7 @@ namespace Match3Practice.src
             _tileSprites = tileSprites;
             _random = random;
             _level = level;
+            _sparkleEffect = sparkleEffect;
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -49,7 +52,14 @@ namespace Match3Practice.src
                         variety = _level - 1;
                     }
 
-                    Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites);
+                    bool isShiny = false;
+
+                    if (_random.Next(10) < 2 && GetShinyTiles().Count < 1)
+                    {
+                        isShiny = true;
+                    }
+
+                    Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites, _sparkleEffect, X, Y, isShiny);
                 }
             }          
         }
@@ -247,7 +257,15 @@ namespace Match3Practice.src
                             variety = _level - 1;
                         }
 
-                        Tile newTile = new Tile(x, y, color, variety, _tileSprites);
+                        bool isShiny = false;
+
+                        if (_random.NextDouble() < 0.1 && GetShinyTiles().Count < 1)
+                        {
+                            isShiny = true;
+                        }
+
+                        Tile newTile = new Tile(x, y, color, variety, _tileSprites, _sparkleEffect, X, Y, isShiny);
+
                         newTile.Y = -32;
                         Tiles[x, y] = newTile;
 
@@ -258,6 +276,22 @@ namespace Match3Practice.src
             return results;
         }
 
+        public List<Tile> GetShinyTiles()
+        {
+            List<Tile> shinyTiles = new List<Tile>();
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Tile currentTile = Tiles[x, y];
+                    if (currentTile != null && currentTile.IsShiny)
+                    {
+                        shinyTiles.Add(currentTile);
+                    }
+                }
+            }
+            return shinyTiles;
+        }
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -267,7 +301,7 @@ namespace Match3Practice.src
                 {
                     if (Tiles[i, j] != null)
                     {
-                        Tiles[i, j].Draw(spriteBatch, X, Y);
+                        Tiles[i, j].Draw(spriteBatch);
                     }
                 }
             }
