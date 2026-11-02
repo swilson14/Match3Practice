@@ -104,6 +104,13 @@ namespace Match3Practice.src.states
         public override void Update(GameTime gameTime, KeyboardInfo keyboard)
         {
 
+            // Check if matches are possible, if not, shuffle the board.
+            if (!_board.HasPossibleMatches())
+            {
+                // Shuffle the board until there are possible matches.
+
+            }
+
             _board.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboard.IsKeyDown(Keys.Escape))
             {
@@ -211,7 +218,6 @@ namespace Match3Practice.src.states
                                     .Easing(EasingFunctions.Linear);
                                 _tweener.TweenTo(target: secondTile, expression: tile => tile.Y, toValue: secondPixelY, duration: 0.1f, delay: 0.1f)
                                     .Easing(EasingFunctions.Linear);
-
                             }                               
                         });
                 }

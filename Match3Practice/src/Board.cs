@@ -361,5 +361,10 @@ namespace Match3Practice.src
                 }
             }
         }
+
+        public bool HasPossibleMatches()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
