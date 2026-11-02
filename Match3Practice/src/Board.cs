@@ -331,6 +331,11 @@ namespace Match3Practice.src
 
         public void Update(float deltaTime)
         {
+            if (GetShinyTiles().Count <= 0)
+            {
+                _sparkleEffect.AutoTrigger = false;
+            }
+
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
