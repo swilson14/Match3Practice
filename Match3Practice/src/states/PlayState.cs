@@ -122,6 +122,7 @@ namespace Match3Practice.src.states
                 // Game over, transition to the game-over state with the final score.
                 _timer.Clear();
                 _gameOverSound.Play();
+                _board
                 _stateMachine.ChangeState("game-over", _score);
             }
 

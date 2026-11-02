@@ -27,7 +27,7 @@ namespace Match3Practice.src
         public List<Match> Matches { get; set; } = new List<Match>();
 
         private int _level;
-        private ParticleEffect _sparkleEffect;
+        public ParticleEffect SparkleEffect {get; set; }
         private ParticleEffect _explosionEffect;
 
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level,
@@ -41,7 +41,7 @@ namespace Match3Practice.src
             _tileSprites = tileSprites;
             _random = random;
             _level = level;
-            _sparkleEffect = sparkleEffect;
+            SparkleEffect = sparkleEffect;
             _explosionEffect = explosionEffect;
 
             InitializeTiles(Width, Height);
@@ -69,7 +69,7 @@ namespace Match3Practice.src
                         isShiny = true;
                     }
 
-                    Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites, _sparkleEffect, X, Y, isShiny);
+                    Tiles[i, j] = new Tile(i, j, color, variety, _tileSprites, SparkleEffect, X, Y, isShiny);
                 }
             }
 
@@ -300,7 +300,7 @@ namespace Match3Practice.src
                             isShiny = true;
                         }
 
-                        Tile newTile = new Tile(x, y, color, variety, _tileSprites, _sparkleEffect, X, Y, isShiny);
+                        Tile newTile = new Tile(x, y, color, variety, _tileSprites, SparkleEffect, X, Y, isShiny);
 
                         newTile.Y = -32;
                         Tiles[x, y] = newTile;
@@ -333,7 +333,7 @@ namespace Match3Practice.src
         {
             if (GetShinyTiles().Count <= 0)
             {
-                _sparkleEffect.AutoTrigger = false;
+                SparkleEffect.AutoTrigger = false;
             }
 
             for (int i = 0; i < Width; i++)
@@ -364,7 +364,9 @@ namespace Match3Practice.src
 
         public bool HasPossibleMatches()
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            return result;
         }
     }
 }
