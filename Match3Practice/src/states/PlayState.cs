@@ -170,33 +170,49 @@ namespace Match3Practice.src.states
                 }
                 else
                 {
-                    int tempX = _highlightedTile.GridX;
-                    int tempY = _highlightedTile.GridY;
+                    Tile firstTile = _highlightedTile;
+                    Tile secondTile = _board.Tiles[x, y];
 
-                    // Swap the positions of the two tiles
-                    Tile newTile = _board.Tiles[x, y];
-                    
-                    _highlightedTile.GridX = newTile.GridX;
-                    _highlightedTile.GridY = newTile.GridY;
+                    int firstX = firstTile.GridX, firstY = firstTile.GridY;
+                    int secondX = secondTile.GridX, secondY = secondTile.GridY;
+                    float firstPixelX = firstTile.X, firstPixelY = firstTile.Y;
+                    float secondPixelX = secondTile.X, secondPixelY = secondTile.Y;
 
-                    newTile.GridX = tempX;
-                    newTile.GridY = tempY;
+                    firstTile.GridX = secondX; firstTile.GridY = secondY;
+                    secondTile.GridX = firstX; secondTile.GridY = firstY;
 
-                    _board.Tiles[_highlightedTile.GridX, _highlightedTile.GridY] = _highlightedTile;
-                    _board.Tiles[newTile.GridX, newTile.GridY] = newTile;
+                    _board.Tiles[secondX, secondY] = firstTile;
+                    _board.Tiles[firstX, firstY] = secondTile;
 
-                    _tweener.TweenTo(target: _highlightedTile, expression: tile => tile.X, toValue: newTile.X, duration: 0.1f)
+                    _tweener.TweenTo(target: _highlightedTile, expression: tile => tile.X, toValue: secondPixelX, duration: 0.1f)
                         .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: _highlightedTile, expression: tile => tile.Y, toValue: newTile.Y, duration: 0.1f)
+                    _tweener.TweenTo(target: _highlightedTile, expression: tile => tile.Y, toValue: secondPixelY, duration: 0.1f)
                         .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: newTile, expression: tile => tile.X, toValue: _highlightedTile.X, duration: 0.1f)
+                    _tweener.TweenTo(target: secondTile, expression: tile => tile.X, toValue: firstPixelX, duration: 0.1f)
                         .Easing(EasingFunctions.Linear);
-                    _tweener.TweenTo(target: newTile, expression: tile => tile.Y, toValue: _highlightedTile.Y, duration: 0.1f)
+                    _tweener.TweenTo(target: secondTile, expression: tile => tile.Y, toValue: firstPixelY, duration: 0.1f)
                         .Easing(EasingFunctions.Linear).OnEnd(_ =>
                         {
                             // Calculate matches.
-                            CalculateMatches();
-                            
+                            if (!CalculateMatches())
+                            {
+                                // Swap the tiles back if no matches were found.
+                                firstTile.GridX = firstX; firstTile.GridY = firstY;
+                                secondTile.GridX = secondX; secondTile.GridY = secondY;
+
+                                _board.Tiles[firstX, firstY] = firstTile;
+                                _board.Tiles[secondX, secondY] = secondTile;
+
+                                _tweener.TweenTo(target: firstTile, expression: tile => tile.X, toValue: firstPixelX, duration: 0.1f, delay: 0.1f)
+                                    .Easing(EasingFunctions.Linear);
+                                _tweener.TweenTo(target: firstTile, expression: tile => tile.Y, toValue: firstPixelY, duration: 0.1f, delay: 0.1f)
+                                    .Easing(EasingFunctions.Linear);
+                                _tweener.TweenTo(target: secondTile, expression: tile => tile.X, toValue: secondPixelX, duration: 0.1f, delay: 0.1f)
+                                    .Easing(EasingFunctions.Linear);
+                                _tweener.TweenTo(target: secondTile, expression: tile => tile.Y, toValue: secondPixelY, duration: 0.1f, delay: 0.1f)
+                                    .Easing(EasingFunctions.Linear);
+
+                            }                               
                         });
                 }
             }
@@ -270,15 +286,17 @@ namespace Match3Practice.src.states
             spriteBatch.DrawString(_mediumFont, timerText, new Vector2((550 - timerTextWidth) / 2, 270), textColor);
         }
 
-        public void CalculateMatches()
+        public bool CalculateMatches()
         {
             _highlightedTile = null;
             _canInput = false;
+            bool result = false;
 
             List<Match> matches = _board.CalculateMatches();
          
             if (matches != null)
             {
+                result = true;
                 _matchSound.Play();
 
                 foreach (Match match in matches)
@@ -327,7 +345,8 @@ namespace Match3Practice.src.states
             {
                 _canInput = true;
             }
-
+            
+            return result;
         }
     }
 }
