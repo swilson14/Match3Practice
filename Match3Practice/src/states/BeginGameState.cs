@@ -22,6 +22,8 @@ namespace Match3Practice.src.states
         public float LevelLabelY;
         private int _score = 0;
 
+        private bool _resetTimer;
+
         private Random _random;
 
         // Graphics
@@ -61,6 +63,16 @@ namespace Match3Practice.src.states
                 _score = (int)args[1];
             }
 
+            if (args.Length > 2)
+            {
+                _resetTimer = (bool)args[2];
+            }
+            else
+            {
+                _resetTimer = true; // Default to true if not provided
+            }
+
+
             _board = new Board(Globals.VIRTUAL_WIDTH - 272, 16, 8, 8, _tileSprites, _random, _level, _sparkleEffect, _explosionEffect);            
 
             _tweener.TweenTo(
@@ -91,7 +103,7 @@ namespace Match3Practice.src.states
                     .Easing(EasingFunctions.Linear)
                     .OnEnd(_ =>
                     {
-                        _stateMachine.ChangeState("play", _level, _board, _score);
+                        _stateMachine.ChangeState("play", _level, _board, _score, _resetTimer);
                     });
                 });
             });

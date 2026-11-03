@@ -27,7 +27,7 @@ namespace Match3Practice.src
         public List<Match> Matches { get; set; } = new List<Match>();
 
         private int _level;
-        public ParticleEffect SparkleEffect {get; set; }
+        public ParticleEffect SparkleEffect { get; set; }
         private ParticleEffect _explosionEffect;
 
         public Board(int x, int y, int width, int height, Dictionary<string, Sprite> tileSprites, Random random, int level,
@@ -106,7 +106,7 @@ namespace Match3Practice.src
                             Match match = new Match();
 
                             // Go backwards from here by matchNum
-                            for (int x2 = x-1; x2 > x-1 - matchNum; x2--)
+                            for (int x2 = x - 1; x2 > x - 1 - matchNum; x2--)
                             {
                                 match.Tiles.Add(Tiles[x2, y]);
                             }
@@ -127,8 +127,8 @@ namespace Match3Practice.src
                     Match match = new Match();
 
                     // Work backwards
-                    for (int x = Width-1; x > Width-1 - matchNum; x--)
-                    {                    
+                    for (int x = Width - 1; x > Width - 1 - matchNum; x--)
+                    {
                         match.Tiles.Add(Tiles[x, y]);
                     }
 
@@ -138,7 +138,7 @@ namespace Match3Practice.src
 
             // Vertical Matches
             for (int x = 0; x < Width; x++)
-            {                
+            {
                 int colorToMatch = Tiles[x, 0].TileColor;
 
                 matchNum = 1;
@@ -157,7 +157,7 @@ namespace Match3Practice.src
                         {
                             Match match = new Match();
 
-                            for (int y2 = y-1; y2 > y-1 - matchNum; y2--)
+                            for (int y2 = y - 1; y2 > y - 1 - matchNum; y2--)
                             {
                                 match.Tiles.Add(Tiles[x, y2]);
                             }
@@ -179,7 +179,7 @@ namespace Match3Practice.src
                     Match match = new Match();
 
                     // Work backwards
-                    for (int y = Height-1; y > Height-1 - matchNum; y--)
+                    for (int y = Height - 1; y > Height - 1 - matchNum; y--)
                     {
                         match.Tiles.Add(Tiles[x, y]);
                     }
@@ -221,7 +221,7 @@ namespace Match3Practice.src
                         {
                             Tiles[x, currentTile.GridY] = null;
                         }
-                        _explosionEffect.Position = new Vector2(X + Globals.TILE_SIZE*4, Y + currentTile.Y);
+                        _explosionEffect.Position = new Vector2(X + Globals.TILE_SIZE * 4, Y + currentTile.Y);
                         _explosionEffect.Trigger();
                     }
                     else
@@ -241,7 +241,7 @@ namespace Match3Practice.src
                 bool space = false;
                 int spaceY = 0;
 
-                int y = Height-1;
+                int y = Height - 1;
                 while (y >= 0)
                 {
                     Tile currentTile = Tiles[x, y];
@@ -277,7 +277,7 @@ namespace Match3Practice.src
             // Replace tiles
             for (int x = 0; x < Width; x++)
             {
-                for (int y = Height-1; y >= 0; y--)
+                for (int y = Height - 1; y >= 0; y--)
                 {
                     Tile currentTile = Tiles[x, y];
 
@@ -364,9 +364,160 @@ namespace Match3Practice.src
 
         public bool HasPossibleMatches()
         {
-            bool result = false;
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    int currentColor = Tiles[x, y].TileColor;
 
-            return result;
+                    // Check directly above
+                    if (y > 2)
+                    {
+                        if (Tiles[x, y - 2].TileColor == currentColor && Tiles[x, y - 3].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check left adjacent above
+                    if (y > 1 && x > 0)
+                    {
+                        if (Tiles[x - 1, y - 1].TileColor == currentColor && Tiles[x - 1, y - 2].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check right adjacent above
+                    if (y > 1 && x < Width - 1)
+                    {
+                        if (Tiles[x + 1, y - 1].TileColor == currentColor && Tiles[x + 1, y - 2].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check directly below
+                    if (y < Height - 3)
+                    {
+                        if (Tiles[x, y + 2].TileColor == currentColor && Tiles[x, y + 3].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Check right adjacent below
+                    if (y < Height - 2 && x < Width - 1)
+                    {
+                        if (Tiles[x + 1, y + 1].TileColor == currentColor && Tiles[x + 1, y + 2].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Check left adjacent below
+                    if (y < Height - 2 && x > 0)
+                    {
+                        if (Tiles[x - 1, y + 1].TileColor == currentColor && Tiles[x - 1, y + 2].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Directly left
+                    if (x > 2)
+                    {
+                        if (Tiles[x - 2, y].TileColor == currentColor && Tiles[x - 3, y].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Check above adjacent left
+                    if (x > 1 && y > 0)
+                    {
+                        if (Tiles[x - 1, y - 1].TileColor == currentColor && Tiles[x - 2, y - 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Check below adjacent left
+                    if (x > 1 && y < Height - 1)
+                    {
+                        if (Tiles[x - 1, y + 1].TileColor == currentColor && Tiles[x - 2, y + 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Directly right
+                    if (x < Width - 3)
+                    {
+                        if (Tiles[x + 2, y].TileColor == currentColor && Tiles[x + 3, y].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check above adjacent right
+                    if (x < Width - 2 && y > 0)
+                    {
+                        if (Tiles[x + 1, y - 1].TileColor == currentColor && Tiles[x + 2, y - 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // check below adjacent right
+                    if (x < Width - 2 && y < Height - 1)
+                    {
+                        if (Tiles[x + 1, y + 1].TileColor == currentColor && Tiles[x + 2, y + 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Sandwich: move up into the gap between two matching tiles
+                    if (y > 0 && x > 0 && x < Width - 1)
+                    {
+                        if (Tiles[x - 1, y - 1].TileColor == currentColor && Tiles[x + 1, y - 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Sandwich: move down
+                    if (y < Height - 1 && x > 0 && x < Width - 1)
+                    {
+                        if (Tiles[x - 1, y + 1].TileColor == currentColor && Tiles[x + 1, y + 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Sandwich: move left
+                    if (x > 0 && y > 0 && y < Height - 1)
+                    {
+                        if (Tiles[x - 1, y - 1].TileColor == currentColor && Tiles[x - 1, y + 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Sandwich: move right
+                    if (x < Width - 1 && y > 0 && y < Height - 1)
+                    {
+                        if (Tiles[x + 1, y - 1].TileColor == currentColor && Tiles[x + 1, y + 1].TileColor == currentColor)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                
+            }
+            return false;
         }
     }
 }
+

@@ -25,9 +25,12 @@ namespace Match3Practice.src.states
         private int _score;
         private int _timerCountdown;
         private Timer _timer;
+        private bool _resetTimer;
+
         private int _level;
         private Board _board;
         private float _scoreGoal;
+        private string _message = string.Empty;
 
         private Tweener _tweener;
 
@@ -41,6 +44,8 @@ namespace Match3Practice.src.states
 
         // Fonts
         private SpriteFont _mediumFont;
+
+        private SpriteFont _largeFont;
 
         // Game / System
         private Game _game;
@@ -67,6 +72,7 @@ namespace Match3Practice.src.states
             _timerCountdown = 60;
             _pixel = pixel;
             _mediumFont = fonts["medium"];
+            _largeFont = fonts["large"];
 
             _timer = new Timer();
             _tweener = new Tweener();
@@ -75,13 +81,21 @@ namespace Match3Practice.src.states
 
         public override void Enter(params object[] args)
         {
+            _timer.Clear();
+
             _level = (int)args[0];
             _board = (Board)args[1];
             _score = (int)args[2];
+            _resetTimer = (bool)args[3];
+
             _scoreGoal = _level * 1.25f * 1000;
 
             // reset timer countdown
-            _timerCountdown = 60;
+            if (_resetTimer)
+            {
+                _timerCountdown = 60;
+            }
+            
 
             // Countdown
             _timer.Every(1f, () =>
@@ -107,8 +121,18 @@ namespace Match3Practice.src.states
             // Check if matches are possible, if not, shuffle the board.
             if (!_board.HasPossibleMatches())
             {
-                // Shuffle the board until there are possible matches.
-
+                // Display a message to the player that the board is being shuffled.
+                _timer.After(1f, () =>
+                {
+                    
+               
+                _message = "No Matches Possible! Shuffling board!";
+                    _timer.After(1f, () =>
+                    {
+                        _stateMachine.ChangeState("begin-game", _level, _score, false);
+                        _message = string.Empty; // Clear the message after shuffling
+                    });
+                });
             }
 
             _board.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
@@ -122,7 +146,7 @@ namespace Match3Practice.src.states
                 // Game over, transition to the game-over state with the final score.
                 _timer.Clear();
                 _gameOverSound.Play();
-                _board
+                _board.SparkleEffect.AutoTrigger = false;
                 _stateMachine.ChangeState("game-over", _score);
             }
 
@@ -287,6 +311,14 @@ namespace Match3Practice.src.states
             float timerTextWidth = _mediumFont.MeasureString(timerText).X;
 
             Color textColor = new Color(99, 155, 255);
+
+            if (_message != string.Empty)
+            {
+                float messageTextWidth = _mediumFont.MeasureString(_message).X;
+                spriteBatch.DrawString(_mediumFont, _message, new Vector2((viewportWidth - messageTextWidth) / 2, 400), textColor);
+            }
+
+
             spriteBatch.DrawString(_mediumFont, levelText, new Vector2((550 - levelTextWidth) / 2, 60), textColor);
             spriteBatch.DrawString(_mediumFont, scoreText, new Vector2((550 - scoreTextWidth) / 2, 130), textColor);
             spriteBatch.DrawString(_mediumFont, goalText, new Vector2((550 - goalTextWidth) / 2, 200), textColor);
