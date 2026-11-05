@@ -23,6 +23,10 @@ namespace Match3Practice.src.states
         const int QUIT_BUTTON_X = 530;
         const int QUIT_BUTTON_Y = 456;
 
+        const int START_BUTTON_WIDTH = 123;
+        const int QUIT_BUTTON_WIDTH = 220;
+        const int MENU_HEIGHT = 43;
+
 
         // Menu / Gameplay
         private int _currentMenuItem = 0;
@@ -141,12 +145,12 @@ namespace Match3Practice.src.states
                 }
 
                 // hover mouse on menu items
-                if (MouseOver(mouse.Position, new Rectangle(START_BUTTON_X, START_BUTTON_Y, 123, 43)))
+                if (MouseOver(mouse.Position, new Rectangle(START_BUTTON_X, START_BUTTON_Y, START_BUTTON_WIDTH, MENU_HEIGHT)))
                 {
                     _currentMenuItem = 0;
                 }
 
-                if (MouseOver(mouse.Position, new Rectangle(QUIT_BUTTON_X, QUIT_BUTTON_Y, 220, 43)))
+                if (MouseOver(mouse.Position, new Rectangle(QUIT_BUTTON_X, QUIT_BUTTON_Y, QUIT_BUTTON_WIDTH, MENU_HEIGHT)))
                 {
                     _currentMenuItem = 1;
                 }
