@@ -19,6 +19,7 @@ using MonoGame.Extended.ViewportAdapters;
 using System;
 using System.Collections.Generic;
 
+
 namespace Match3Practice
 {
     public class Game1 : Game
@@ -30,7 +31,7 @@ namespace Match3Practice
         private OrthographicCamera _camera;
         private StateMachine _stateMachine;
         private KeyboardInfo _keyboard;
-
+        private MouseInfo _mouse;
 
         // Graphics
         private Texture2D _backgroundTexture;
@@ -100,6 +101,8 @@ namespace Match3Practice
 
             _keyboard = new KeyboardInfo();
             _stateMachine = new StateMachine();
+            _mouse = new MouseInfo();
+
 
             // populate sound effects dictionary
             Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>
@@ -350,7 +353,8 @@ namespace Match3Practice
             }
 
             _keyboard.Update();
-            _stateMachine.Update(gameTime, _keyboard);
+            _mouse.Update();
+            _stateMachine.Update(gameTime, _keyboard, _mouse);
             _sparkleEffect.Update(gameTime);
             _explosionEffect.Update(gameTime);
 

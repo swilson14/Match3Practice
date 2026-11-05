@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Match3Practice.src.states
 {
     public abstract class State
@@ -22,7 +23,7 @@ namespace Match3Practice.src.states
         public virtual void Enter(params object[] args) { }
         public virtual void Exit() { }
 
-        public abstract void Update(GameTime gameTime, KeyboardInfo keyboard);
+        public abstract void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse);
 
         public abstract void Draw(SpriteBatch spriteBatch);
 

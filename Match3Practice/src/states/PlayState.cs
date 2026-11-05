@@ -115,7 +115,7 @@ namespace Match3Practice.src.states
 
         }
 
-        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
+        public override void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse)
         {
 
             // Check if matches are possible, if not, shuffle the board.
@@ -159,7 +159,6 @@ namespace Match3Practice.src.states
 
             if (_canInput)
             {
-
                 if (keyboard.WasKeyJustPressed(Keys.Up))
                 {
                     _boardHighlightY = Math.Max(0, _boardHighlightY - 1);
@@ -181,6 +180,15 @@ namespace Match3Practice.src.states
                     _selectSound.Play();
                 }
             }
+
+            if (mouse.WasButtonJustPressed(MouseButton.Left))
+            {
+                // Calculate the tile coordinates based on the mouse position
+                int mouseX = mouse.Position.X;
+                int mouseY = mouse.Position.Y;
+
+            }
+
 
             if (keyboard.WasKeyJustPressed(Keys.Enter))
             {

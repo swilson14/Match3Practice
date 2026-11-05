@@ -109,7 +109,7 @@ namespace Match3Practice.src.states
             });
         }
 
-        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
+        public override void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse)
         {
             _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }

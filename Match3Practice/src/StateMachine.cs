@@ -23,9 +23,9 @@ namespace Match3Practice.src
             CurrentState?.Enter(args);
         }
 
-        public void Update(GameTime gameTime, KeyboardInfo keyboard)
+        public void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse)
         {
-            CurrentState.Update(gameTime, keyboard);
+            CurrentState.Update(gameTime, keyboard, mouse);
         }
 
         public void Draw(SpriteBatch spriteBatch)

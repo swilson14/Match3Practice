@@ -9,6 +9,7 @@ using MonoGame.Extended.Particles;
 using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,12 @@ namespace Match3Practice.src.states
 {
     public class StartState : State
     {
+        const int START_BUTTON_X = 579;
+        const int START_BUTTON_Y = 390;
+        const int QUIT_BUTTON_X = 530;
+        const int QUIT_BUTTON_Y = 456;
+
+
         // Menu / Gameplay
         private int _currentMenuItem = 0;
         private List<Color> _colors;
@@ -28,6 +35,7 @@ namespace Match3Practice.src.states
         private Random _random;
         private Tweener _tweener;
         private Game _game;
+
 
         // Audio
         private SoundEffect _selectSound;
@@ -42,7 +50,7 @@ namespace Match3Practice.src.states
         private SpriteFont _mediumFont;
         private SpriteFont _largeFont;
 
-       
+        private MouseInfo _mouse;
 
 
         public StartState(StateMachine stateMachine, Dictionary<string, Sprite> sprites, Random random,
@@ -111,8 +119,10 @@ namespace Match3Practice.src.states
             _transitionAlpha.Alpha = 0f;
         }
 
-        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
+        public override void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse)
         {
+            _mouse = mouse;
+
             _colorTimer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             _tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -129,6 +139,35 @@ namespace Match3Practice.src.states
                     // play select sound
                     _selectSound.Play();
                 }
+
+                // hover mouse on menu items
+                if (MouseOver(mouse.Position, new Rectangle(START_BUTTON_X, START_BUTTON_Y, 123, 43)))
+                {
+                    _currentMenuItem = 0;
+                }
+
+                if (MouseOver(mouse.Position, new Rectangle(QUIT_BUTTON_X, QUIT_BUTTON_Y, 220, 43)))
+                {
+                    _currentMenuItem = 1;
+                }
+
+                if (mouse.WasButtonJustPressed(MouseButton.Left))
+                {
+                    if (MouseOver(mouse.Position, new Rectangle(START_BUTTON_X, START_BUTTON_Y, 123, 43)))
+                    {
+                        _tweener.TweenTo(target: _transitionAlpha, expression: Alpha => Alpha.Alpha, toValue: 1f, duration: 1f)
+                            .Easing(EasingFunctions.Linear).OnEnd(_ =>
+                            {
+                                _colorTimer.Clear();
+                                _stateMachine.ChangeState("begin-game", 1);
+                            });
+                    }
+                    else if (MouseOver(mouse.Position, new Rectangle(QUIT_BUTTON_X, QUIT_BUTTON_Y, 220, 43)))
+                    {
+                        _game.Exit();
+                    }
+                }
+
 
                 if (keyboard.WasKeyJustPressed(Keys.Enter))
                 {
@@ -148,6 +187,11 @@ namespace Match3Practice.src.states
                     }
                 }
             }
+        }
+
+        private bool MouseOver(Point mousePosition, Rectangle bounds)
+        {
+            return bounds.Contains(mousePosition);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -194,28 +238,38 @@ namespace Match3Practice.src.states
         private void DrawOptionsText(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, int y)
         {
             DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, "START", viewportHeight / 2 + y, _mediumFont);
+            float startTextHeight = _mediumFont.MeasureString("START").Y;
+            float startTextWidth = _mediumFont.MeasureString("START").X;
+
+            Vector2 startPosition = new Vector2((viewportWidth - startTextWidth) / 2, viewportHeight / 2 + y);
 
             if (_currentMenuItem == 0)
             {
-                spriteBatch.DrawString(_mediumFont, "START", new Vector2((viewportWidth - _mediumFont.MeasureString("START").X) / 2, viewportHeight / 2 + y), new Color(99, 155, 255));
+                spriteBatch.DrawString(_mediumFont, "START", startPosition, new Color(99, 155, 255));
             }
             else
             {
-                spriteBatch.DrawString(_mediumFont, "START", new Vector2((viewportWidth - _mediumFont.MeasureString("START").X) / 2, viewportHeight / 2 + y), new Color(48, 96, 130));
+                spriteBatch.DrawString(_mediumFont, "START", startPosition, new Color(48, 96, 130));
             }
 
             DrawTextShadow(spriteBatch, viewportWidth, viewportHeight, "Quit Game", viewportHeight / 2 + y + 66, _mediumFont);
 
+
+            float quitTextHeight = _mediumFont.MeasureString("Quit Game").Y;
+            float quitTextWidth = _mediumFont.MeasureString("Quit Game").X;
+            Vector2 quitPosition = new Vector2((viewportWidth - quitTextWidth) / 2, viewportHeight / 2 + y + 66);
+
+
             if (_currentMenuItem == 1)
             {
-                spriteBatch.DrawString(_mediumFont, "Quit Game", new Vector2((viewportWidth - _mediumFont.MeasureString("Quit Game").X) / 2, viewportHeight / 2 + y + 66), new Color(99, 155, 255));
+                spriteBatch.DrawString(_mediumFont, "Quit Game", quitPosition, new Color(99, 155, 255));
             }
             else
             {
-                spriteBatch.DrawString(_mediumFont, "Quit Game", new Vector2((viewportWidth - _mediumFont.MeasureString("Quit Game").X) / 2, viewportHeight / 2 + y + 66), new Color(48, 96, 130));
+                spriteBatch.DrawString(_mediumFont, "Quit Game", quitPosition, new Color(48, 96, 130));
             }
 
-
+            spriteBatch.DrawString(_mediumFont, _mouse.Position.ToString(), new Vector2(10, 10), Color.White);
         }
 
         private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y, SpriteFont font)

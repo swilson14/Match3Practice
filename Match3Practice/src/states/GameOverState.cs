@@ -36,7 +36,7 @@ namespace Match3Practice.src.states
             _score = (int)args[0];
         }
 
-        public override void Update(GameTime gameTime, KeyboardInfo keyboard)
+        public override void Update(GameTime gameTime, KeyboardInfo keyboard, MouseInfo mouse)
         {
             if (keyboard.WasKeyJustPressed(Keys.Enter))
             {
