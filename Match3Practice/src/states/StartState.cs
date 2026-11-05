@@ -22,7 +22,6 @@ namespace Match3Practice.src.states
         const int START_BUTTON_Y = 390;
         const int QUIT_BUTTON_X = 530;
         const int QUIT_BUTTON_Y = 456;
-
         const int START_BUTTON_WIDTH = 123;
         const int QUIT_BUTTON_WIDTH = 220;
         const int MENU_HEIGHT = 43;
