@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System;
 using MonoGame.Extended.Particles;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Tilemaps.Tiled.Document;
 
 namespace Match3Practice.src
 {
@@ -517,6 +518,22 @@ namespace Match3Practice.src
                 
             }
             return false;
+        }
+
+        public Tile GetTile(int mouseX, int mouseY)
+        {
+            // Check if the mouse is within the board's bounds
+            if (mouseX < X * 2.5 || mouseX > (X + Width * Globals.TILE_SIZE) * 2.5 ||
+                mouseY < Y * 2.5 || mouseY > (Y + Height * Globals.TILE_SIZE) * 2.5)
+            {
+                return null;
+            }
+
+            // Mouse position minus board position, divided by tile size to get the tile coordinates
+            // Adjusted for virtual width and height by multiplying by 2.5
+            int tileX = ((int)(mouseX - X*2.5)) / (int)(Globals.TILE_SIZE*2.5);
+            int tileY = ((int)(mouseY - Y*2.5)) / (int)(Globals.TILE_SIZE*2.5);
+            return Tiles[tileX, tileY];
         }
     }
 }
