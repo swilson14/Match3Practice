@@ -271,8 +271,6 @@ namespace Match3Practice.src.states
             {
                 spriteBatch.DrawString(_mediumFont, "Quit Game", quitPosition, new Color(48, 96, 130));
             }
-
-            spriteBatch.DrawString(_mediumFont, _mouse.Position.ToString(), new Vector2(10, 10), Color.White);
         }
 
         private void DrawTextShadow(SpriteBatch spriteBatch, int viewportWidth, int viewportHeight, string text, int y, SpriteFont font)
